@@ -1,0 +1,703 @@
+{
+  "easycom": {
+    "autoscan": true,
+    "custom": {
+//      "^wd-(.*)": "wot-design-uni/components/wd-$1/wd-$1.vue",
+      "^cu-(.*)": "@/components/cu-$1/index.vue",
+      "^uni-(.*)": "@dcloudio/uni-ui/lib/uni-$1/uni-$1.vue"
+      //如果不想全局注册，可以使用 easycom自动引入。在 pages.json中添加
+      //我们之前已经配置了EasyCom按需引入，但是发现构建产物中仍然有全部的wot-design-uni组件。这是因为EasyCom只是省去了手动导入组件的步骤，但构建工具（如Webpack）在打包时，
+      //仍然会将整个wot-design-uni库打包进来，因为我们在代码中使用了来自wot-design-uni的组件，而Webpack无法通过EasyCom的配置来Tree Shaking掉未使用的组件。
+    }
+  },
+  "lazyCodeLoading": "requiredComponents",
+  "pages": [
+    {
+      "path": "pages/index/index",
+      "style": {
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/category/category",
+      "style": {
+        "navigationBarTitleText": "商品分类"
+      }
+    },
+    {
+      "path": "pages/cart/cart",
+      "style": {
+        "navigationBarTitleText": "我的购物车"
+      }
+    },
+    {
+      "path": "pages/user/user",
+      "style": {
+        "navigationBarTitleText": "我的"
+      }
+    },
+    {
+      "path": "pages/login/login",
+      "style": {
+        "navigationBarTitleText": "商城登录"
+      }
+    }
+  ],
+  "subPackages": [
+    {
+      "root": "packageA",
+      "independent": true,
+      "pages": [
+
+
+
+
+        {
+          "path": "pages/mine/about/index",
+          "style": {
+            "navigationBarTitleText": "关于可我不敌可爱"
+          }
+        },
+        {
+          "path": "pages/mine/faq/index",
+          "style": {
+            "navigationBarTitleText": "常见问题"
+          }
+        },
+        {
+          "path": "pages/mine/feedback/index",
+          "style": {
+            "navigationBarTitleText": "问题反馈"
+          }
+        },
+        {
+          "path": "pages/mine/settings/index",
+          "style": {
+            "navigationBarTitleText": "设置"
+          }
+        },
+
+        {
+          "path": "pages/mine/settings/set",
+          "style": {
+            "navigationBarTitleText": "设置"
+          }
+        },
+
+        {
+          "path": "pages/mine/settings/account/index",
+          "style": {
+            "navigationBarTitleText": "账号和安全"
+          }
+        },
+        {
+          "path": "pages/mine/settings/agreements/index",
+          "style": {
+            "navigationBarTitleText": "用户协议"
+          }
+        },
+        {
+          "path": "pages/mine/settings/agreements/privacy-policy",
+          "style": {
+            "navigationBarTitleText": "隐私政策"
+          }
+        },
+        {
+          "path": "pages/mine/settings/theme/index",
+          "style": {
+            "navigationBarTitleText": "主题设置"
+          }
+        },
+        {
+          "path": "pages/mine/settings/network/index",
+          "style": {
+            "navigationBarTitleText": "网络检测"
+          }
+        },
+//        {
+//          "path": "pages/login/index",
+//          "style": {
+//            "navigationBarTitleText": "登录"
+//          }
+//        },
+
+        {
+          "path": "pages/login/login",
+          "style": {
+            "navigationBarTitleText": "商城登录"
+          }
+        },
+
+        {
+          "path": "pages/mine/profile/index",
+          "style": {
+            "navigationBarTitleText": "个人资料"
+          }
+        }
+      ]
+    },
+    {
+      "root": "packageB",
+      "independent": true,
+      "pages": [
+        {
+          "path": "pages/work/user/index",
+          "style": {
+            "navigationStyle": "custom"
+          }
+        },
+        {
+          "path": "pages/work/log/index",
+          "style": {
+            "navigationBarTitleText": "日志管理"
+          }
+        },
+        {
+          "path": "pages/work/config/index",
+          "style": {
+            "navigationBarTitleText": "系统配置"
+          }
+        },
+        {
+          "path": "pages/work/notice/index",
+          "style": {
+            "navigationBarTitleText": "通知公告"
+          }
+        },
+        {
+          "path": "pages/work/notice/detail",
+          "style": {
+            "navigationBarTitleText": "通知详情"
+          }
+        },
+        {
+          "path": "pages/work/role/index",
+          "style": {
+            "navigationBarTitleText": "角色管理"
+          }
+        },
+        {
+          "path": "pages/work/role/assign-perm",
+          "style": {
+            "navigationBarTitleText": "角色分配权限"
+          }
+        }
+      ]
+    },
+    {
+      "root": "packageC",
+      "independent": true,
+      "pages": [
+
+        {
+          "path": "pages/product/product",
+          "style": {
+            "navigationBarTitleText": "商品详情"
+          }
+        },
+        {
+          "path": "pages/product/list",
+          "style": {
+            "navigationBarTitleText": "商品列表页"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_department/department/index",
+          "style": {
+            "navigationBarTitleText": "部门管理"
+          }
+        },
+        {
+          "path": "pages/aioveu_department/department/form",
+          "style": {
+            "navigationBarTitleText": "部门管理表单"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_department/position/index",
+          "style": {
+            "navigationBarTitleText": "岗位管理"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_department/position/form",
+          "style": {
+            "navigationBarTitleText": "岗位管理表单"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_department/employee/index",
+          "style": {
+            "navigationBarTitleText": "员工管理"
+          }
+        },
+        {
+          "path": "pages/aioveu_department/employee/form",
+          "style": {
+            "navigationBarTitleText": "员工管理表单"
+          }
+        },
+        {
+          "path": "pages/aioveu_department/attendance/index",
+          "style": {
+            "navigationBarTitleText": "考勤管理"
+          }
+        },
+        {
+          "path": "pages/aioveu_department/attendance/form",
+          "style": {
+            "navigationBarTitleText": "考勤管理表单"
+          }
+        },
+        {
+          "path": "pages/aioveu_department/performance/index",
+          "style": {
+            "navigationBarTitleText": "绩效管理"
+          }
+        },
+        {
+          "path": "pages/aioveu_department/performance/form",
+          "style": {
+            "navigationBarTitleText": "绩效管理表单"
+          }
+        },
+        {
+          "path": "pages/aioveu_department/salary/index",
+          "style": {
+            "navigationBarTitleText": "薪资管理"
+          }
+        },
+        {
+          "path": "pages/aioveu_department/salary/form",
+          "style": {
+            "navigationBarTitleText": "薪资管理表单"
+          }
+        }
+      ]
+    },
+    {
+      "root": "packageD",
+      "independent": true,
+      "pages": [
+
+        {
+          "path": "pages/order/createOrder",
+          "style": {
+            "navigationBarTitleText": "创建订单"
+          }
+        },
+
+        {
+          "path": "pages/address/addressManage",
+          "style": {
+            "navigationBarTitleText": "收货地址管理"
+          }
+        },
+
+        {
+          "path": "pages/address/address",
+          "style": {
+            "navigationBarTitleText": "收货地址"
+          }
+        },
+
+        {
+          "path": "pages/order/order",
+          "style": {
+            "navigationBarTitleText": "订单"
+          }
+        },
+
+        {
+          "path": "pages/order/detail",
+          "style": {
+            "navigationBarTitleText": "订单详情"
+          }
+        },
+
+        {
+          "path": "pages/money/money",
+          "style": {
+            "navigationBarTitleText": "我的钱包"
+          }
+        },
+        {
+          "path": "pages/money/pay",
+          "style": {
+            "navigationBarTitleText": "支付"
+          }
+        },
+        {
+          "path": "pages/money/paySuccess",
+          "style": {
+            "navigationBarTitleText": "支付成功"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_material/category/index",
+          "style": {
+            "navigationBarTitleText": "物资分类管理"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_material/category/form",
+          "style": {
+            "navigationBarTitleText": "物资分类管理表单"
+          }
+        },
+        {
+          "path": "pages/aioveu_material/material/index",
+          "style": {
+            "navigationBarTitleText": "物资管理"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_material/material/form",
+          "style": {
+            "navigationBarTitleText": "物资管理表单"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_material/warehouse/index",
+          "style": {
+            "navigationBarTitleText": "仓库管理"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_material/warehouse/form",
+          "style": {
+            "navigationBarTitleText": "仓库管理表单"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_material/inventory/index",
+          "style": {
+            "navigationBarTitleText": "库存管理"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_material/inventory/form",
+          "style": {
+            "navigationBarTitleText": "库存管理表单"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_material/inbound/index",
+          "style": {
+            "navigationBarTitleText": "入库管理"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_material/inbound/form",
+          "style": {
+            "navigationBarTitleText": "入库管理表单"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_material/equipment/index",
+          "style": {
+            "navigationBarTitleText": "设备管理"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_material/equipment/form",
+          "style": {
+            "navigationBarTitleText": "设备管理表单"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_material/procurement/index",
+          "style": {
+            "navigationBarTitleText": "采购管理"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_material/procurement/form",
+          "style": {
+            "navigationBarTitleText": "采购管理表单"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_material/outbound/index",
+          "style": {
+            "navigationBarTitleText": "出库管理"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_material/outbound/form",
+          "style": {
+            "navigationBarTitleText": "出库管理表单"
+          }
+        }
+
+      ]
+    },
+    {
+      "root": "packageE",
+      "independent": true,
+      "pages": [
+        {
+          "path": "pages/aioveu_customer/customer/index",
+          "style": {
+            "navigationBarTitleText": "客户管理"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_customer/customer/form",
+          "style": {
+            "navigationBarTitleText": "客户管理表单"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_customer/contact/index",
+          "style": {
+            "navigationBarTitleText": "联系人管理"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_customer/contact/form",
+          "style": {
+            "navigationBarTitleText": "联系人管理表单"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_customer/transaction/index",
+          "style": {
+            "navigationBarTitleText": "交易管理"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_customer/transaction/form",
+          "style": {
+            "navigationBarTitleText": "交易管理表单"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_customer/sales_order/index",
+          "style": {
+            "navigationBarTitleText": "订单管理"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_customer/sales_order/form",
+          "style": {
+            "navigationBarTitleText": "订单管理表单"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_customer/sales_order_detail/index",
+          "style": {
+            "navigationBarTitleText": "订单明细管理"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_customer/sales_order_detail/form",
+          "style": {
+            "navigationBarTitleText": "订单明细管理表单"
+          }
+        }
+
+      ]
+    },
+    {
+      "root": "packageF",
+      "independent": true,
+      "pages": [
+        {
+          "path": "pages/aioveu_member/member_level/index",
+          "style": {
+            "navigationBarTitleText": "会员等级管理"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_member/member_level/form",
+          "style": {
+            "navigationBarTitleText": "会员等级表单"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_member/member/index",
+          "style": {
+            "navigationBarTitleText": "会员信息管理"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_member/member/form",
+          "style": {
+            "navigationBarTitleText": "会员信息管理表单"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_member/member_account/index",
+          "style": {
+            "navigationBarTitleText": "会员充值账户管理"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_member/member_account/form",
+          "style": {
+            "navigationBarTitleText": "会员充值账户表单"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_member/member_recharge_record/index",
+          "style": {
+            "navigationBarTitleText": "会员充值记录管理"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_member/member_recharge_record/form",
+          "style": {
+            "navigationBarTitleText": "会员充值记录表单"
+          }
+        },
+        {
+          "path": "pages/aioveu_member/member_recharge_record/recharge",
+          "style": {
+            "navigationBarTitleText": "会员充值表单"
+          }
+        }
+      ]
+    },
+    {
+      "root": "packageG",
+      "independent": true,
+      "pages": [
+        {
+          "path": "pages/aioveu_laundry/laundry_order/index",
+          "style": {
+            "navigationBarTitleText": "洗护订单管理"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_laundry/laundry_order/form",
+          "style": {
+            "navigationBarTitleText": "洗护订单表单"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_laundry/laundry_clothing_type/index",
+          "style": {
+            "navigationBarTitleText": "衣物类型管理"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_laundry/laundry_clothing_type/form",
+          "style": {
+            "navigationBarTitleText": "衣物类型表单"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_laundry/laundry_order_item/index",
+          "style": {
+            "navigationBarTitleText": "洗护订单衣物明细管理"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_laundry/laundry_order_item/form",
+          "style": {
+            "navigationBarTitleText": "洗护订单衣物明细表单"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_laundry/laundry_process_image/index",
+          "style": {
+            "navigationBarTitleText": "洗护流程图片管理"
+          }
+        },
+
+        {
+          "path": "pages/aioveu_laundry/laundry_process_image/form",
+          "style": {
+            "navigationBarTitleText": "洗护流程图片表单"
+          }
+        },
+        {
+          "path": "pages/aioveu_laundry/laundry_garment_info/index",
+          "style": {
+            "navigationBarTitleText": "衣物详情页面"
+          }
+        }
+      ]
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "可我不敌心动",
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "backgroundColor": "#F8F8F8"
+  },
+  "tabBar": {
+    "color": "#474747",
+    "selectedColor": "#3B8DFF",
+    "backgroundColor": "#F8F8F8",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "static/tabbar/home/tab-home.png",
+        "selectedIconPath": "static/tabbar/home/tab-home-current.png"
+      },
+      {
+        "pagePath": "pages/category/category",
+        "text": "商品分类",
+        "iconPath": "static/tabbar/cate/tab-cate.png",
+        "selectedIconPath": "static/tabbar/cate/tab-cate-current.png"
+      },
+      {
+        "pagePath": "pages/cart/cart",
+        "text": "我的购物车",
+        "iconPath": "static/tabbar/cart/tab-cart.png",
+        "selectedIconPath": "static/tabbar/cart/tab-cart-current.png"
+      },
+      {
+        "pagePath": "pages/user/user",
+        "text": "我的",
+        "iconPath": "static/tabbar/mine/tab-my.png",
+        "selectedIconPath": "static/tabbar/mine/tab-my-current.png"
+      }
+    ]
+  }
+//  "entryPagePath": "pages/login/login"
+}
