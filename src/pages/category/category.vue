@@ -183,7 +183,7 @@ const loadData = async (force = false) => {
     }
 
     const categoryList = response; // ✅ 修复：应该是 response
-    // console.log("分类数据:", categoryList)
+    console.log("分类数据:", categoryList)
 
     // 重置数据
     flist.value = [];

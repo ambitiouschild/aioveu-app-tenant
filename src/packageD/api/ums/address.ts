@@ -1,8 +1,11 @@
 import request from '@/utils/request'
 
+const UMSMEMBERADDRESS_BASE_URL = "/aioveu-tenant-ums/app-api/v1/addresses";
+
+//url: `${UMSMEMBERADDRESS_BASE_URL}`,
 export function list(memberId : number) {
 	return request({
-		url: '/aioveu-ums/app-api/v1/addresses',
+    url: `${UMSMEMBERADDRESS_BASE_URL}`,
 		method: "GET",
 		data: {
 			memberId: memberId
@@ -16,7 +19,7 @@ export function list(memberId : number) {
 
 export function add(data:Object) {
 	return request({
-    url: '/aioveu-ums/app-api/v1/addresses',
+    url: `${UMSMEMBERADDRESS_BASE_URL}`,
     method: "POST",
     data: data,
     header: {
@@ -33,8 +36,7 @@ export function update(id :Number, data:Object) {
     //方案1：使用模板字符串（正确的方式）  url: `/aioveu-ums/app-api/v1/addresses/${id}`,
 
     //方案2：使用字符串拼接  url: '/aioveu-ums/app-api/v1/addresses/' + id,  // 字符串拼接
-
-		url: `/aioveu-ums/app-api/v1/addresses/${id}`,
+    url: `${UMSMEMBERADDRESS_BASE_URL}/${id}`,
 		method: "PUT",
 		data: data,
 		header: {

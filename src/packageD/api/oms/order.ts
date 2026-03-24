@@ -1,9 +1,13 @@
 import request from '@/utils/request'
 
+const OMSORDER_BASE_URL = "/aioveu-tenant-oms/app-api/v1/orders";
+
+//url: `${OMSORDER_BASE_URL}`,
+
 // 订单列表
 export function listOrdersWithPage(params :any) {
 	return request({
-		url: '/aioveu-oms/app-api/v1/orders',
+    url: `${OMSORDER_BASE_URL}`,
 		method: "GET",
 		data: params,
 		header: {
@@ -15,7 +19,7 @@ export function listOrdersWithPage(params :any) {
 // 订单确认
 export function confirm( skuId :any) {
 	return request({
-		url: '/aioveu-oms/app-api/v1/orders/confirm',
+		url: `${OMSORDER_BASE_URL}/confirm`,
 		method: "POST",
 		data: {
 			skuId: skuId
@@ -29,7 +33,7 @@ export function confirm( skuId :any) {
 // 订单提交
 export function submit(data :any) {
 	return request({
-		url: '/aioveu-oms/app-api/v1/orders/submit',
+    url: `${OMSORDER_BASE_URL}/submit`,
 		method: "POST",
 		data: data,
 		header: {
@@ -41,7 +45,7 @@ export function submit(data :any) {
 // 订单支付
 export function pay(data :any) {
 	return request({
-		url: '/aioveu-oms/app-api/v1/orders/payment',
+    url: `${OMSORDER_BASE_URL}/payment`,
 		method: "POST",
 		data:data,
 		header: {
@@ -53,7 +57,7 @@ export function pay(data :any) {
 // 取消订单
 export function cancelOrder(orderId :any) {
 	return request({
-		url: '/aioveu-oms/app-api/v1/orders/cancel',
+    url: `${OMSORDER_BASE_URL}/cancel`,
 		method: "PUT",
 		data: {
 			id: orderId
@@ -67,7 +71,7 @@ export function cancelOrder(orderId :any) {
 // 删除订单
 export function deleteOrder(orderId :any) {
 	return request({
-		url: '/aioveu-oms/app-api/v1/orders/' + orderId,
+    url: `${OMSORDER_BASE_URL}/${orderId}`,
 		method: "DELETE",
 		header: {
 			'auth': true // 需要认证
@@ -78,7 +82,7 @@ export function deleteOrder(orderId :any) {
 // 申请退款
 export function applyRefund (data :any) {
   return request({
-    url: '/aioveu-oms/app-api/v1/orders/apply-refund',
+    url: `${OMSORDER_BASE_URL}/apply-refund`,
     method: "POST",
     data,
     header: {
@@ -90,7 +94,7 @@ export function applyRefund (data :any) {
 // 获取退款详情
 export function getRefundDetail (orderId :any) {
   return request({
-    url: `/aioveu-oms/app-api/v1/orders/refund-detail/${orderId}`,
+    url: `${OMSORDER_BASE_URL}/refund-detail/${orderId}`,
     method: "GET",
     header: {
       'auth': true // 需要认证

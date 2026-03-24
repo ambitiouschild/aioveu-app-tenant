@@ -1,6 +1,6 @@
 import request from "@/utils/request";
 
-const PAY_BASE_URL = "/aioveu-pay/api/v1/pay-order";
+const PAY_BASE_URL = "/aioveu-tenant-pay/api/v1/pay-order";
 
 const PayAPI = {
   /** 前端调用：查询支付状态 */

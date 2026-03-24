@@ -1,5 +1,11 @@
 import request from "@/utils/request";
-
+import {
+ CLIENT_CONFIG,
+  setClientId,
+  getClientId,
+  clearClientId,
+  detectClientId,
+} from "@/utils/clientManager";
 
 const AUTH_BASE_URL = "/aioveu-tenant-auth/api/v1/auth";
 const AUTH_LOGIN_URL = "/aioveu-tenant-auth";
@@ -35,6 +41,11 @@ const AuthAPI = {
 
     // console.log("微信登录code", code);
     //code: "0a106x000bOLFV1Pis000Tsiqh306x0u"传递的应该是字符串而不是对象
+    const clientId = getClientId() || CLIENT_CONFIG.CLIENT_ID;
+    console.log("登录使用客户端ID:", clientId);
+    const basicAuth =  CLIENT_CONFIG.getBASIC_AUTH();
+    console.log("动态生成的认证头:", basicAuth);
+
 
     return request<LoginResult>({
       url: `${AUTH_LOGIN_URL}/oauth2/token`,
@@ -46,7 +57,8 @@ const AuthAPI = {
       header: {
         //修改你的 API 文件，使用字符串格式参数
         "Content-Type": "application/x-www-form-urlencoded",
-        Authorization: "Basic bWFsbC1hcHA6MTIzNDU2", // 客户端信息Base64加密，明文：mall-app:123456
+        Authorization: basicAuth,  // 使用动态生成的认证头
+        // Authorization: "Basic bWFsbC1hcHA6MTIzNDU2", // 客户端信息Base64加密，明文：mall-app:123456  return 'Basic bWFsbC1hcHA6MTIzNDU2';
       },
     });
   },
@@ -62,6 +74,9 @@ const AuthAPI = {
 
     // console.log("微信登录code", code);
     //code: "0a106x000bOLFV1Pis000Tsiqh306x0u"传递的应该是字符串而不是对象
+    // 获取当前客户端ID
+
+
 
     return request<LoginResult>({
       url: `${AUTH_LOGIN_URL}/oauth2/token`,
