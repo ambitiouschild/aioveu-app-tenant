@@ -133,7 +133,15 @@
           "style": {
             "navigationBarTitleText": "个人资料"
           }
+        },
+        {
+          "path": "pages/mine/settings/user/profile",
+          "style": {
+            "navigationBarTitleText": "个人资料"
+          }
         }
+
+
       ]
     },
     {

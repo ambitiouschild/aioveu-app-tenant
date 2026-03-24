@@ -7,11 +7,11 @@
       <!-- 小程序登录授权界面 -->
       <!-- #ifdef MP -->
       <button class="confirm-btn" @click.stop="getUserProfile">小程序登录授权</button>
-      <view class="tip">温馨提示:未注册可我不敌可爱的用户,初次登录时将完成注册</view>
+      <view class="tip">温馨提示:未注册可我不敌心动的用户,初次登录时将完成注册</view>
 
       <view class="privacy-body">
         <text class="desc">
-          感谢您使用可我不敌可爱！我们高度重视您的个人信息和隐私保护。在您使用我们的服务前，请仔细阅读并同意以下协议：
+          感谢您使用可我不敌心动！我们高度重视您的个人信息和隐私保护。在您使用我们的服务前，请仔细阅读并同意以下协议：
         </text>
 
         <view class="agreement-links">
