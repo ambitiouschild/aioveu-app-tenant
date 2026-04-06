@@ -1,7 +1,8 @@
 import { getToken, clearAll } from "@/utils/cache";
 import { ResultCodeEnum } from "@/enums/ResultCodeEnum";
 
-
+// utils/request.ts
+import { useUserStore } from "@/store/modules/user"
 
 /**
  * 手动构建 URL 编码的参数字符串
@@ -62,7 +63,7 @@ const processData = (data: any, contentType?: string) => {
 /**
  * 请求拦截器
  */
-const requestInterceptor = (config: any) => {
+const requestInterceptor = async (config: any) => {
   // console.log("🔧 请求拦截器处理", config);
 
   // 判断请求是否需要认证
@@ -71,6 +72,35 @@ const requestInterceptor = (config: any) => {
     if (token) {
       config.header.Authorization = `Bearer ${token}`;
     }
+  }
+
+  // 如果配置中指定跳过认证，则不添加token
+  if (config.header?.skipAuth === true) {
+    return config;
+  }
+  const userStore = useUserStore();
+
+  try {
+    // 获取有效的token（会自动刷新）
+    const token = await userStore.getValidToken();
+    if (token && config.headers) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+  } catch (error: any) {
+    // token刷新失败，需要重新登录
+    if (error.message === "NOT_LOGGED_IN" ||
+      error.message === "NO_REFRESH_TOKEN") {
+      // 跳转到登录页
+      uni.showModal({
+        title: "提示",
+        content: "登录已过期，请重新登录",
+        showCancel: false,
+        success: () => {
+          uni.reLaunch({ url: "/pages/login/login" });
+        },
+      });
+    }
+    return Promise.reject(error);
   }
 
   return config;

@@ -179,6 +179,13 @@ const functionList = [
   {
     icon: "icon-shezhi1",
     iconColor: "#e07472",
+    title: "手动刷新令牌",
+    border: "",
+    event: () => manualRefresh(),
+  },
+  {
+    icon: "icon-shezhi1",
+    iconColor: "#e07472",
     title: "设置",
     border: "",
     event: () => navTo("/packageA/pages/mine/settings/set"),
@@ -212,6 +219,16 @@ const userId = computed(() => {
 
   return userStore.userInfo?.id || "";
 });
+
+// 手动刷新令牌（可选）
+const manualRefresh = async () => {
+  try {
+    const newToken = await userStore.refreshAccessToken();
+    console.log('令牌已刷新:', newToken);
+  } catch (error) {
+    console.error('刷新失败:', error);
+  }
+};
 
 // 用户名
 const username = computed(() => {

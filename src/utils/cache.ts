@@ -1,21 +1,55 @@
 const TOKEN_KEY = "app-token";
+const REFRESH_TOKEN_KEY = "app-refresh-token";
+const TOKEN_EXPIRES_AT = "Token-Expires-At";
 const USER_INFO_KEY = "user-info";
 
 // 设置 token
-export function setToken(token: string) {
+export const setToken = (token: string): void => {
   uni.setStorageSync(TOKEN_KEY, token);
-}
+};
 
 // 获取 token
-export function getToken(): string {
+export const getToken = (): string => {
   return uni.getStorageSync(TOKEN_KEY) || "";
-}
+};
 
 // 清除 token
 export function clearToken() {
   uni.removeStorageSync(TOKEN_KEY);
 }
+//----------------------------------------------
 
+// 设置 refreshTokenValue  刷新令牌
+
+export const setRefreshToken = (refreshTokenValue: string): void => {
+  uni.setStorageSync(REFRESH_TOKEN_KEY, refreshTokenValue);
+};
+
+
+// 获取 refreshTokenValue 刷新令牌
+export const getRefreshToken = (): string => {
+  return uni.getStorageSync(REFRESH_TOKEN_KEY) || "";
+};
+
+// 设置 TokenExpiresAt  过期时间
+export const setTokenExpiresAt = (expiresAt: string | number): void => {
+  const expiresAtStr = typeof expiresAt === 'number'
+    ? expiresAt.toString()
+    : expiresAt;
+  uni.setStorageSync(TOKEN_EXPIRES_AT, expiresAtStr);
+};
+
+// 获取 TokenExpiresAt  过期时间
+// ✅ 推荐写法
+export const getTokenExpiresAt = (): number => {
+  const expiresAt = uni.getStorageSync(TOKEN_EXPIRES_AT);
+  if (!expiresAt) return 0;
+
+  const num = Number(expiresAt);
+  return isNaN(num) ? 0 : num;
+};
+
+//----------------------------------------------
 // 设置用户信息
 export function setUserInfo(userInfo: any) {
   uni.setStorageSync(USER_INFO_KEY, userInfo);
