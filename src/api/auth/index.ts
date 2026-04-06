@@ -85,7 +85,7 @@ const AuthAPI = {
       method: "POST",
       data: {
         refreshToken: refreshToken ,
-        grant_type: "wechat",
+        grant_type: "refresh_token",
       },
       header: {
         //修改你的 API 文件，使用字符串格式参数
