@@ -84,8 +84,8 @@ const AuthAPI = {
       url: `${AUTH_LOGIN_URL}/oauth2/token`,
       method: "POST",
       data: {
-        refreshToken: refreshToken ,
-        grant_type: "refresh_token",
+        refresh_token: refreshToken ,
+        grant_type: "aioveu_refresh_token",
       },
       header: {
         //修改你的 API 文件，使用字符串格式参数

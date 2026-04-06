@@ -91,14 +91,14 @@ const requestInterceptor = async (config: any) => {
     if (error.message === "NOT_LOGGED_IN" ||
       error.message === "NO_REFRESH_TOKEN") {
       // 跳转到登录页
-      uni.showModal({
-        title: "提示",
-        content: "登录已过期，请重新登录",
-        showCancel: false,
-        success: () => {
-          uni.reLaunch({ url: "/pages/login/login" });
-        },
-      });
+      // uni.showModal({
+      //   title: "提示",
+      //   content: "登录已过期，请重新登录",
+      //   showCancel: false,
+      //   success: () => {
+      //     uni.reLaunch({ url: "/pages/login/login" });
+      //   },
+      // });
     }
     return Promise.reject(error);
   }
