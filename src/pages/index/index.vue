@@ -8,7 +8,7 @@
     <!-- #endif -->
 
     <!-- 头部轮播 -->
-    <view class="carousel-section">
+    <view v-if="carouselList.length > 0" class="carousel-section">
       <!-- 标题栏和状态栏占位符 -->
       <!--      脚本/内联加载，或设置了 no-referrer-->
       <view class="titleNview-placing"></view>
@@ -28,6 +28,29 @@
         <text class="num">{{ swiperCurrent + 1 }}</text>
         <text class="sign">/</text>
         <text class="num">{{ swiperLength }}</text>
+      </view>
+    </view>
+
+    <view v-else class="carousel-section">
+      <!-- 标题栏和状态栏占位符 -->
+      <!--      脚本/内联加载，或设置了 no-referrer-->
+      <view class="titleNview-placing"></view>
+      <swiper class="carousel" circular @change="handleSwiperChange">
+        <swiper-item
+          v-for="(item, index) in defaultCarouselList"
+          :key="index"
+          class="carousel-item"
+          @click="navToDetailPage({ title: item.title })"
+        >
+          <image :src="item.imageUrl" />
+          <!-- 这里用 imageUrl，不是 picUrl -->
+        </swiper-item>
+      </swiper>
+      <!-- 自定义swiper指示器 -->
+      <view class="swiper-dots">
+        <text class="num">{{ swiperCurrent + 1 }}</text>
+        <text class="sign">/</text>
+        <text class="num">{{ defaultCarouselList.length }}</text>
       </view>
     </view>
 
@@ -225,6 +248,12 @@ const adverts = ref([]);
 const loading = ref(false);
 
 const defaultCateIcon = "https://cdn.aioveu.com/aioveu/aioveu-server/avatar/avatar.png";
+
+// 默认分类数据
+const defaultCarouselList = ref([
+  { id: 1, title: "小王", imageUrl: "https://cdn.aioveu.com/aioveu/1001/image/20260407/c43dd45d2225419ea807a8b4f592dd30.png" },
+  { id: 2, title: "故宫", imageUrl: "https://cdn.aioveu.com/aioveu/1001/image/20260407/3f69d9aa9dc84685ba85f6ca6d3db2bb.png" },
+]);
 
 // 默认分类数据
 const defaultCategories = ref([
