@@ -1,9 +1,12 @@
 <template>
   <view class="container">
     <view class="user-section">
+      <!--        src="https://cdn.aioveu.com/aioveu/aioveu-server/pages/user/user-bg2.png"-->
+<!--      红墙2_760x500-->
+<!--      src="https://cdn.aioveu.com/aioveu/1001/image/20260407/bc34e9bad08940ef8d9dc58e666f088b.png"-->
       <image
         class="bg"
-        src="https://cdn.aioveu.com/aioveu/aioveu-server/pages/user/user-bg2.png"
+        src="https://cdn.aioveu.com/aioveu/1001/image/20260407/4f6a871430254e9381c114b0d46bbcac.png"
       ></image>
       <view class="user-info-box">
         <view
