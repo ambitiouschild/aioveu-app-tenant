@@ -38,8 +38,8 @@ export const DEFAULT_CATEGORIES: DefaultCategories = {
     { id: 3, name: "家用电器", parentId: 0, sort: 3 },
     { id: 4, name: "服装鞋包", parentId: 0, sort: 4 },
     { id: 5, name: "美妆个护", parentId: 0, sort: 5 },
-    { id: 6, name: "食品生鲜", parentId: 0, sort: 6 },
-    { id: 7, name: "母婴用品", parentId: 0, sort: 7 },
+    // { id: 6, name: "食品生鲜", parentId: 0, sort: 6 },
+    // { id: 7, name: "母婴用品", parentId: 0, sort: 7 },
     { id: 8, name: "运动户外", parentId: 0, sort: 8 },
     { id: 9, name: "图书音像", parentId: 0, sort: 9 },
     { id: 10, name: "家居家装", parentId: 0, sort: 10 }
