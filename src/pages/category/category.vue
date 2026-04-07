@@ -44,6 +44,8 @@
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { getCategoryList } from "@/api/pms/category";
 
+import { DEFAULT_CATEGORIES, getDefaultIcon } from "@/static/defaultCategories/defaultCategories";
+
 //Vue 2 的 Options API 和 Vue 3 的 Composition API
 //✅ 纯 Vue 3 Composition API
 //✅ 正确的响应式数据访问
@@ -68,6 +70,10 @@ const lastLoadTime = ref(0);
 // 添加一个数据版本标记
 const dataVersion = ref(0);
 const networkType = ref("unknown"); // 网络类型
+
+
+// 添加一个状态标记是否使用默认数据
+const useDefaultData = ref(false);
 
 // 计算属性：安全的二级分类列表  显示顺序依赖数据顺序  safeSlist直接使用 slist.value的顺序
 const safeSlist = computed(() => {
@@ -172,107 +178,230 @@ const loadData = async (force = false) => {
   }
 
   loading.value = true;
+  useDefaultData.value = false; // 重置默认数据标记
 
   try {
-    // console.log("调用API获取分类数据:")
+    console.log("调用API获取分类数据:")
     const response = await getCategoryList();
 
-    if (!response) {
-      console.error("获取分类数据失败");
-      return;
+
+    if (response && Array.isArray(response) && response.length > 0) {
+      // API调用成功，处理数据
+      console.log("API返回分类数据:", response.length, "条");
+      processApiData(response);
+      setStorage("last_success_time", now); // 记录成功时间
+    } else {
+      // API返回空或无效数据，使用默认数据
+      console.warn("API返回空数据，使用默认分类数据");
+      useDefaultData.value = true;
+      processDefaultData();
     }
 
-    const categoryList = response; // ✅ 修复：应该是 response
-    console.log("分类数据:", categoryList)
 
-    // 重置数据
-    flist.value = [];
-    slist.value = [];
-    tlist.value = [];
+  } catch (error) {
+    // 网络错误或API调用失败，使用默认数据
+    console.error("API调用失败:", error);
+    console.log("使用默认分类数据作为回退");
+    useDefaultData.value = true;
+    processDefaultData();
+  }finally {
+    loading.value = false;
+  }
+};
 
-    // 处理数据
-    categoryList.forEach((first) => {
-      if (!first?.id) return;
 
-      // 一级分类  一级分类：直接从categoryList中获取
-      flist.value.push({
-        id: first.id,
-        name: first.name || "未命名",
-        parentId: first.parentId || 0,
-        sort: first.sort || 0,
+/**
+ * 处理API返回的数据
+ */
+const processApiData = (categoryList) => {
+
+
+      // 重置数据
+      flist.value = [];
+      slist.value = [];
+      tlist.value = [];
+
+      // 处理数据
+      categoryList.forEach((first) => {
+        if (!first?.id) return;
+
+        // 一级分类  一级分类：直接从categoryList中获取
+        flist.value.push({
+          id: first.id,
+          name: first.name || "未命名",
+          parentId: first.parentId || 0,
+          sort: first.sort || 0,
+        });
+
+        // 二级分类  二级分类：从first.children中获取
+        if (first.children?.length) {
+          first.children.forEach((second) => {
+            if (!second?.id) return;
+
+            const secondItem = {
+              id: second.id,
+              name: second.name || "未命名",
+              parentId: second.parentId || first.id, // 父级应该是一级分类的ID
+              sort: second.sort || 0,
+            };
+            slist.value.push(secondItem);
+
+            // 三级分类  三级分类：从second.children中获取
+            if (second.children?.length) {
+              second.children.forEach((third) => {
+                if (!third?.id) return;
+
+                tlist.value.push({
+                  id: third.id,
+                  name: third.name || "未命名",
+                  parentId: third.parentId || second.id, // 父级应该是二级分类的ID
+                  iconUrl: third.iconUrl || null,
+                  sort: third.sort || 0,
+                });
+              });
+            }
+          });
+        }
       });
 
-      // 二级分类  二级分类：从first.children中获取
-      if (first.children?.length) {
-        first.children.forEach((second) => {
-          if (!second?.id) return;
+      // 如果API数据为空，补充默认数据
+      if (flist.value.length === 0) {
+        console.log("API数据为空，补充默认数据");
+        supplementWithDefaultData();
+      } else {
 
-          const secondItem = {
-            id: second.id,
-            name: second.name || "未命名",
-            parentId: second.parentId || first.id, // 父级应该是一级分类的ID
-            sort: second.sort || 0,
-          };
-          slist.value.push(secondItem);
-
-          // 三级分类  三级分类：从second.children中获取
-          if (second.children?.length) {
-            second.children.forEach((third) => {
-              if (!third?.id) return;
-
-              tlist.value.push({
-                id: third.id,
-                name: third.name || "未命名",
-                parentId: third.parentId || second.id, // 父级应该是二级分类的ID
-                iconUrl: third.iconUrl || null,
-                sort: third.sort || 0,
-              });
-            });
-          }
-        });
       }
+
+
+      // 排序
+      sortCategories();
+
+      // 更新时间戳
+      lastLoadTime.value = now; // ✅ 这里要更新
+
+      // 更新数据版本
+      dataVersion.value++;
+      setStorage(CACHE_CONFIG.VERSION_KEY, dataVersion.value);
+      setStorage(CACHE_CONFIG.TIMESTAMP_KEY, Date.now());
+
+      // ❌ 注释掉这行，不要重置选中状态
+      // // 默认选中第一个
+      // if (flist.value.length > 0) {
+      //   currentId.value = flist.value[0].id
+      // }
+
+      // ✅ 关键：重置尺寸计算状态  只有真正更新数据时才设为 false
+      /*    你的思路完全正确：
+      不需要每次点击都设置 false
+      只需要在数据真正更新时设置 false
+      这样点击时如果有新数据，就会重新计算
+      如果没有新数据（使用缓存），就使用已有的计算*/
+
+      sizeCalcState.value = false;
+
+      console.log("数据加载完成:", {
+        一级分类: flist.value.length,
+        二级分类: slist.value.length,
+        三级分类: tlist.value.length
+      })
+
+      console.log("数据加载完成，版本:", dataVersion.value);
+
+};
+
+
+/**
+ * 处理默认数据
+ */
+const processDefaultData = () => {
+  // 重置数据
+  flist.value = [...DEFAULT_CATEGORIES.flist];
+  slist.value = [...DEFAULT_CATEGORIES.slist];
+  tlist.value = [...DEFAULT_CATEGORIES.tlist];
+
+  // 排序
+  sortCategories();
+
+  // 更新时间戳
+  lastLoadTime.value = Date.now();
+  dataVersion.value++;
+  setStorage(CACHE_CONFIG.VERSION_KEY, dataVersion.value);
+  setStorage(CACHE_CONFIG.TIMESTAMP_KEY, Date.now());
+  setStorage("using_default_data", true); // 标记使用默认数据
+
+  // 重置尺寸计算状态
+  sizeCalcState.value = false;
+
+  console.log("默认数据加载完成:", {
+    一级分类: flist.value.length,
+    二级分类: slist.value.length,
+    三级分类: tlist.value.length
+  });
+
+  // 显示提示（可选）
+  if (useDefaultData.value) {
+    uni.showToast({
+      title: '网络异常，显示默认分类',
+      icon: 'none',
+      duration: 2000
     });
-
-    // 排序
-    sortCategories();
-
-    // 更新时间戳
-    lastLoadTime.value = now; // ✅ 这里要更新
-
-    // 更新数据版本
-    dataVersion.value++;
-    setStorage(CACHE_CONFIG.VERSION_KEY, dataVersion.value);
-    setStorage(CACHE_CONFIG.TIMESTAMP_KEY, Date.now());
-
-    // ❌ 注释掉这行，不要重置选中状态
-    // // 默认选中第一个
-    // if (flist.value.length > 0) {
-    //   currentId.value = flist.value[0].id
-    // }
-
-    // ✅ 关键：重置尺寸计算状态  只有真正更新数据时才设为 false
-    /*    你的思路完全正确：
-    不需要每次点击都设置 false
-    只需要在数据真正更新时设置 false
-    这样点击时如果有新数据，就会重新计算
-    如果没有新数据（使用缓存），就使用已有的计算*/
-
-    sizeCalcState.value = false;
-
-    // console.log("数据加载完成:", {
-    //   一级分类: flist.value.length,
-    //   二级分类: slist.value.length,
-    //   三级分类: tlist.value.length
-    // })
-
-    console.log("数据加载完成，版本:", dataVersion.value);
-    await nextTick();
-
-    // ✅ 可选：立即计算尺寸
-    // await calculateSizes()
-  } catch (error) {
-    console.error("加载失败:", error);
   }
+};
+
+
+
+/**
+ * 补充默认数据
+ */
+const supplementWithDefaultData = () => {
+  const existingIds = {
+    flist: new Set(flist.value.map(item => item.id)),
+    slist: new Set(slist.value.map(item => item.id)),
+    tlist: new Set(tlist.value.map(item => item.id))
+  };
+
+  // 补充一级分类
+  DEFAULT_CATEGORIES.flist.forEach(item => {
+    if (!existingIds.flist.has(item.id)) {
+      flist.value.push({ ...item });
+    }
+  });
+
+  // 补充二级分类
+  DEFAULT_CATEGORIES.slist.forEach(item => {
+    if (!existingIds.slist.has(item.id)) {
+      slist.value.push({ ...item });
+    }
+  });
+
+  // 补充三级分类
+  DEFAULT_CATEGORIES.tlist.forEach(item => {
+    if (!existingIds.tlist.has(item.id)) {
+      tlist.value.push({
+        ...item,
+        iconUrl: item.iconUrl || getDefaultIcon(item.id) || getRandomDefaultIcon(item.id)
+
+      });
+    }
+  });
+
+  // 排序
+  sortCategories();
+
+  // 更新时间戳
+  lastLoadTime.value = Date.now();
+  dataVersion.value++;
+  setStorage(CACHE_CONFIG.VERSION_KEY, dataVersion.value);
+  setStorage(CACHE_CONFIG.TIMESTAMP_KEY, Date.now());
+
+  // 重置尺寸计算状态
+  sizeCalcState.value = false;
+
+  console.log("数据补充完成:", {
+    一级分类: flist.value.length,
+    二级分类: slist.value.length,
+    三级分类: tlist.value.length
+  });
 };
 
 /**
@@ -304,6 +433,26 @@ const getNetworkType = () => {
     }
   });
 };
+
+
+/**
+ * 获取随机默认图标
+ */
+const getRandomDefaultIcon = (id) => {
+  const icons = [
+    "https://cdn.aioveu.com/aioveu/aioveu-server/avatar/avatar.png",
+    "https://cdn.aioveu.com/aioveu/aioveu-server/avatar/avatar.png",
+    "https://cdn.aioveu.com/aioveu/aioveu-server/avatar/avatar.png",
+    "https://cdn.aioveu.com/aioveu/aioveu-server/avatar/avatar.png",
+    "https://cdn.aioveu.com/aioveu/aioveu-server/avatar/avatar.png"
+  ];
+
+  // 使用ID确保同一分类总是得到相同的图标
+  const index = Math.abs(id) % icons.length;
+  return icons[index];
+};
+
+
 
 /**
  * 存储数据（小程序兼容）
