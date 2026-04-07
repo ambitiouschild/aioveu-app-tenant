@@ -90,9 +90,18 @@
       </view>
     </view>
 
-    <!-- ✅ 简约版欢迎语 -->
-    <view v-for="(advert, index) in adverts" :key="index" class="simple-welcome">
-      <text>🎉 {{ advert.homeAdvertName }}🎉</text>
+    <view v-if="adverts.length > 0" >
+        <!-- ✅ 简约版欢迎语 -->
+        <view v-for="(advert, index) in adverts" :key="index" class="simple-welcome">
+          <text>🎉 {{ advert.homeAdvertName || "欢迎 来到可我不敌心动" }}🎉</text>
+        </view>
+    </view>
+
+    <!-- 默认分类 -->
+    <view v-else >
+      <view class="simple-welcome">
+      <text>🎉 {{ "欢迎 来到可我不敌心动" }}🎉</text>
+      </view>
     </view>
 
     <!-- 推荐：带图标的欢迎横幅 -->
@@ -265,15 +274,17 @@ const defaultCategories = ref([
 ]);
 
 // 默认广告数据
-const defaultAdvert = ref({
-  id: 1,
-  imageUrl:
-    "https://cdn.aioveu.com/aioveu/1001/image/20260304/2a8febb7ea0a43b7a865f708b65ae23f.png",
-  jumpPath: "/pages/product/list",
-  jumpType: "navigateTo",
-  height: 210,
-  imageMode: "scaleToFill",
-});
+const defaultAdvert = ref([
+  {
+    id: 1,
+    homeAdvertIcon:
+      "https://cdn.aioveu.com/aioveu/1001/image/20260304/2a8febb7ea0a43b7a865f708b65ae23f.png",
+    jumpPath: "/pages/product/list",
+    jumpType: "navigateTo",
+    height: 210,
+    imageMode: "scaleToFill",
+  }
+]);
 
 // 生命周期
 // 页面显示时触发
