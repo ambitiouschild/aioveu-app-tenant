@@ -215,7 +215,7 @@ const loadData = async (force = false) => {
  */
 const processApiData = (categoryList) => {
 
-
+  const now = Date.now();
       // 重置数据
       flist.value = [];
       slist.value = [];
