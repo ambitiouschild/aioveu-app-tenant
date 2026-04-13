@@ -181,6 +181,41 @@ const checkedItemCount = computed(() => {
   return cartItemList.value.filter((item) => item.checked).length;
 });
 
+
+import {
+  onShareAppMessage,
+  onShareTimeline,
+  onNavigationBarSearchInputClicked,
+  onNavigationBarButtonTap,
+} from "@dcloudio/uni-app";
+
+import { SHARE_CONFIG } from "@/utils/shareConfig/shareConfig";
+
+// 分享功能
+onShareAppMessage(() => ({
+  title: SHARE_CONFIG.TITLE,  // 统一使用这里的标题
+  path: "/pages/cart/cart",
+  imageUrl: "********************",
+  success: (res) => {
+    console.log("分享成功", res);
+  },
+  fail: (err) => {
+    console.log("分享失败", err);
+  },
+}));
+
+onShareTimeline(() => ({
+  title: SHARE_CONFIG.TITLE,  // 统一使用这里的标题
+  query: SHARE_CONFIG.DEFAULT_QUERY,  // 统一使用这里的参数
+  imageUrl: SHARE_CONFIG.IMAGE_URL,  // 统一使用这里的图片
+  success: (res) => {
+    console.log("分享到朋友圈成功", res);
+  },
+  fail: (err) => {
+    console.log("分享到朋友圈失败", err);
+  },
+}));
+
 // 监听购物车列表变化
 watch(
   cartItemList,

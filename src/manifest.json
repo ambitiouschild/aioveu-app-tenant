@@ -1,6 +1,6 @@
 {
-    "name" : "",
-    "appid" : "",
+    "name" : "可我不敌心疼",
+    "appid" : "wxd25369beff763442",
     "description" : "",
     "versionName" : "1.0.0",
     "versionCode" : "100",
@@ -50,7 +50,12 @@
     "quickapp" : {},
     /* 小程序特有相关 */
     "mp-weixin" : {
-        "appid" : "wxe510ad6d4d60bfa8",
+        "appid" : "wxd25369beff763442",
+      //      "appid" : "wxe510ad6d4d60bfa8",（可我不敌心动）
+      //      "appid" : "wxe0e6720ed2db3937",（可我不敌心欢）
+      //      "appid" : "wxd25369beff763442",（可我不敌心疼）
+
+
         "setting" : {
             "urlCheck" : false,
             "minified" : true,

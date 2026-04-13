@@ -15,7 +15,9 @@ const CLIENT_KEY = "app-clientId";
  */
 export const CLIENT_CONFIG = {
   // 客户端ID
-  CLIENT_ID: 'xinhuan-app',
+  // CLIENT_ID: 'xindong-app',
+  // CLIENT_ID: 'xinhuan-app',
+  CLIENT_ID: 'xinteng-app',
 
   // 客户端密钥
   CLIENT_SECRET: '123456',

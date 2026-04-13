@@ -98,6 +98,38 @@ const getThirdCategories = (secondId) => {
   return tlist.value.filter((titem) => titem && titem.parentId === secondId);
 };
 
+import {
+  onShareAppMessage,
+  onShareTimeline,
+  onNavigationBarSearchInputClicked,
+  onNavigationBarButtonTap,
+} from "@dcloudio/uni-app";
+
+// 分享功能
+onShareAppMessage(() => ({
+  title: SHARE_CONFIG.TITLE,  // 统一使用这里的标题
+  path: "/pages/category/category",
+  imageUrl: "********************",
+  success: (res) => {
+    console.log("分享成功", res);
+  },
+  fail: (err) => {
+    console.log("分享失败", err);
+  },
+}));
+
+onShareTimeline(() => ({
+  title: SHARE_CONFIG.TITLE,  // 统一使用这里的标题
+  query: SHARE_CONFIG.DEFAULT_QUERY,  // 统一使用这里的参数
+  imageUrl: SHARE_CONFIG.IMAGE_URL,  // 统一使用这里的图片
+  success: (res) => {
+    console.log("分享到朋友圈成功", res);
+  },
+  fail: (err) => {
+    console.log("分享到朋友圈失败", err);
+  },
+}));
+
 /*你的排序逻辑技术上合理，但可以更简单实用：
 建议的改进：
 简化排序器：去掉过度设计

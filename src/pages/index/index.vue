@@ -240,6 +240,9 @@ import {
   onNavigationBarButtonTap,
 } from "@dcloudio/uni-app";
 import { getAdvertList } from "@/api/sms/advert";
+
+import { SHARE_CONFIG } from "@/utils/shareConfig/shareConfig";
+
 import { listSeckillingSpus } from "@/api/pms/goods";
 import SmsHomeAdvertAPI, { SmsHomeAdvertPageVO } from "@/api/sms/sms-home-advert";
 import SmsHomeCategoryAPI, { SmsHomeCategoryPageVO } from "@/api/sms/sms-home-category";
@@ -302,9 +305,9 @@ onPullDownRefresh(async () => {
 
 // 分享功能
 onShareAppMessage(() => ({
-  title: "买东西~可我不敌心动",
+  title: SHARE_CONFIG.TITLE,  // 统一使用这里的标题
   path: "/pages/index/index",
-  imageUrl: "********************",
+  imageUrl: SHARE_CONFIG.IMAGE_URL,  // 统一使用这里的图片
   success: (res) => {
     console.log("分享成功", res);
   },
@@ -314,9 +317,9 @@ onShareAppMessage(() => ({
 }));
 
 onShareTimeline(() => ({
-  title: "买东西~可我不敌心动",
-  query: "key=value",
-  imageUrl: "https://cdn.aioveu.com/aioveu-server/avatar/avatar.png",
+  title: SHARE_CONFIG.TITLE,  // 统一使用这里的标题
+  query: SHARE_CONFIG.DEFAULT_QUERY,  // 统一使用这里的参数
+  imageUrl: SHARE_CONFIG.IMAGE_URL,  // 统一使用这里的图片
   success: (res) => {
     console.log("分享到朋友圈成功", res);
   },

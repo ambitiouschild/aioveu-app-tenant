@@ -223,6 +223,39 @@ const userId = computed(() => {
   return userStore.userInfo?.id || "";
 });
 
+
+import {
+  onShareAppMessage,
+  onShareTimeline,
+  onNavigationBarSearchInputClicked,
+  onNavigationBarButtonTap,
+} from "@dcloudio/uni-app";
+
+// 分享功能
+onShareAppMessage(() => ({
+  title: "买东西~可我不敌心动",
+  path: "/pages/index/index",
+  imageUrl: "********************",
+  success: (res) => {
+    console.log("分享成功", res);
+  },
+  fail: (err) => {
+    console.log("分享失败", err);
+  },
+}));
+
+onShareTimeline(() => ({
+  title: "买东西~可我不敌心动",
+  query: "key=value",
+  imageUrl: "https://cdn.aioveu.com/aioveu-server/avatar/avatar.png",
+  success: (res) => {
+    console.log("分享到朋友圈成功", res);
+  },
+  fail: (err) => {
+    console.log("分享到朋友圈失败", err);
+  },
+}));
+
 // 手动刷新令牌（可选）
 const manualRefresh = async () => {
   try {
