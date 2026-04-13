@@ -195,7 +195,7 @@ import { SHARE_CONFIG } from "@/utils/shareConfig/shareConfig";
 onShareAppMessage(() => ({
   title: SHARE_CONFIG.TITLE,  // 统一使用这里的标题
   path: "/pages/cart/cart",
-  imageUrl: "********************",
+  imageUrl: "",
   success: (res) => {
     console.log("分享成功", res);
   },

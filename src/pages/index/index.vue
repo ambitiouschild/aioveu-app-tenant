@@ -307,7 +307,7 @@ onPullDownRefresh(async () => {
 onShareAppMessage(() => ({
   title: SHARE_CONFIG.TITLE,  // 统一使用这里的标题
   path: "/pages/index/index",
-  imageUrl: SHARE_CONFIG.IMAGE_URL,  // 统一使用这里的图片
+  imageUrl: "",
   success: (res) => {
     console.log("分享成功", res);
   },

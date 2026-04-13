@@ -109,7 +109,7 @@ import {
 onShareAppMessage(() => ({
   title: SHARE_CONFIG.TITLE,  // 统一使用这里的标题
   path: "/pages/category/category",
-  imageUrl: "********************",
+  imageUrl: "",
   success: (res) => {
     console.log("分享成功", res);
   },
