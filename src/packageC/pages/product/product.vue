@@ -527,17 +527,47 @@ const updateSelectedSku = () => {
  * @param {string} html - 原始HTML
  * @returns {string} 格式化后的HTML
  */
+// 正则表达式不够完善：无法正确处理带空格的标签
+// 样式替换不完整：可能无法覆盖所有图片样式
+// 缺少容错处理：对异常HTML结构处理不够健壮
+
+
+// const formatRichText = (html) => {
+//   if (!html) return '';
+//
+//   // 处理图片自适应
+//   return html.replace(/<(img).*?(\/>|<\/img>)/g, (match) => {
+//     if (match.indexOf('style') < 0) {
+//       return match.replace(/<\s*img/, '<img style="max-width:100%;height:auto;"');
+//     } else {
+//       return match.replace(/style=("|')/, 'style=$1max-width:100%;height:auto;');
+//     }
+//   });
+// };
+
+
+
 const formatRichText = (html) => {
   if (!html) return '';
 
-  // 处理图片自适应
-  return html.replace(/<(img).*?(\/>|<\/img>)/g, (match) => {
-    if (match.indexOf('style') < 0) {
-      return match.replace(/<\s*img/, '<img style="max-width:100%;height:auto;"');
-    } else {
-      return match.replace(/style=("|')/, 'style=$1max-width:100%;height:auto;');
-    }
-  });
+  return html
+    // 处理没有style属性的img标签
+    .replace(/<img\b(?![^>]*style)([^>]*)>/gi, '<img style="max-width: 100% !important; height: auto !important;" $1>')
+    // 处理有style属性的img标签
+    .replace(/<img\b([^>]*)style=["']([^"']*)["']([^>]*)>/gi, (match, before, style, after) => {
+      // 清理原有样式中的尺寸设置
+      const cleanedStyle = style
+        .replace(/(max-)?width\s*:\s*[^;]+;?\s*/gi, '')
+        .replace(/(max-)?height\s*:\s*[^;]+;?\s*/gi, '')
+        .trim();
+
+      return `<img${before}style="${cleanedStyle}; max-width: 100% !important; height: auto !important;"${after}>`;
+    })
+    // 移除内联的width/height属性
+    .replace(/\b(width|height)\s*=\s*["'][^"']*["']/gi, '')
+    // 清理多余的空格
+    .replace(/\s{2,}/g, ' ')
+    .trim();
 };
 
 /**
