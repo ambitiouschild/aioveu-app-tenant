@@ -296,7 +296,7 @@ const loadHistoryData = async () => {
     // historyList.value = res.data;
 
     // 暂时使用模拟数据
-    historyList.value = mockHistoryData;
+    // historyList.value = mockHistoryData;
   } catch (error) {
     console.error("加载浏览历史失败:", error);
   }
