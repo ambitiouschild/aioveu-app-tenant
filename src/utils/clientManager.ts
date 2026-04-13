@@ -16,8 +16,8 @@ const CLIENT_KEY = "app-clientId";
 export const CLIENT_CONFIG = {
   // 客户端ID
   // CLIENT_ID: 'xindong-app',
-  // CLIENT_ID: 'xinhuan-app',
-  CLIENT_ID: 'xinteng-app',
+  CLIENT_ID: 'xinhuan-app',
+  // CLIENT_ID: 'xinteng-app',
 
   // 客户端密钥
   CLIENT_SECRET: '123456',
@@ -81,6 +81,8 @@ export const CLIENT_CONFIG = {
         console.log("验证客户端认证:手动生成的认证头：正确!");
         return basicAuth;
       }
+
+      // return basicAuth;
 
     }catch(e){
       console.warn('base64 编码失败，使用手动实现', e);
@@ -180,7 +182,17 @@ export const parseBasicAuth = (auth:any) => {
   }
 
   const base64 = auth.substring(6); // 移除 "Basic "
-  const decoded = atob ? atob(base64) : base64Decode(base64);
+  // const decoded = atob ? atob(base64) : base64Decode(base64);
+
+  // 正确的方式：使用 typeof 检查函数是否存在
+  const decoded = typeof atob !== 'undefined'
+    ? atob(base64)
+    : base64Decode(base64);
+
+  // 方案3：完全移除 atob 依赖（最安全）
+  // 在小程序中，直接使用我们自己的实现
+  // const decoded = base64Decode(base64);
+
   const [username, password] = decoded.split(':');
 
   return { username, password };
