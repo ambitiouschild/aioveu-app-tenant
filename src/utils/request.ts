@@ -131,7 +131,7 @@ const responseInterceptor = (response: any) => {
       title: '会话已过期，请重新登录',
       success() {
         uni.navigateTo({
-          url: `/pages/login/login`,
+          url: `/packageA/pages/login/login`,
         });
       }
     });
