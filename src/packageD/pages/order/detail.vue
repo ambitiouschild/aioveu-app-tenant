@@ -64,11 +64,11 @@
           <text>商品总额</text>
           <text>¥{{ orderDetail.goodsAmount }}</text>
         </view>
-        <view v-if="orderDetail.discount > 0" class="total-row">
+        <view v-if="orderDetail.discount != null" class="total-row">
           <text>优惠金额</text>
           <text class="discount">-¥{{ orderDetail.discount }}</text>
         </view>
-        <view v-if="orderDetail.shippingFee > 0" class="total-row">
+        <view v-if="orderDetail.shippingFee != null" class="total-row">
           <text>运费</text>
           <text>¥{{ orderDetail.shippingFee }}</text>
         </view>
@@ -183,12 +183,14 @@ import { ref, computed, onMounted, onUnmounted } from "vue";
 import { onLoad, onShow, onHide } from "@dcloudio/uni-app";
 import { formatTime, formatCountdown } from "@/utils/time";
 import { copyText, showToast, showModal } from "@/utils/common";
+import { getOmsOrderDetail } from "@/packageD/api/oms/orderDetail";
+import { listOrdersWithPage } from "@/packageD/api/oms/order";
 
 // 响应式数据
 const loading = ref(false);
 const orderDetail = ref({
   id: "",
-  orderNo: "",
+  orderSn: "",
   status: "pending", // pending, paid, shipped, completed, cancelled, refunded
   statusDesc: "",
   createTime: "",
@@ -217,6 +219,16 @@ const statusTextMap = {
   refunded: "已退款",
 };
 
+// 状态文本映射
+const statusEnumMap = {
+  0: "pending",
+  1: "paid",
+  2: "shipped",
+  3: "completed",
+  4: "cancelled",
+  5: "refunded",
+};
+
 // 计算属性
 const showActionButtons = computed(() => {
   return ["pending", "paid", "shipped", "completed", "cancelled", "refunded"].includes(
@@ -224,17 +236,17 @@ const showActionButtons = computed(() => {
   );
 });
 
-// 页面参数
-let orderId = "";
-let channel = 1;
+// // 页面参数
+const orderSn = ref(""); // 订单编号
+const channel = ref(1); // 渠道标识
 
 // 生命周期
 onLoad((options) => {
   console.log("订单详情页接收参数:", options);
-  orderId = options.id || "";
-  channel = options.channel || 1;
+  orderSn.value = options.orderSn || "";
+  channel.value = options.channel || 1;
 
-  if (!orderId) {
+  if (!orderSn) {
     showToast("订单号不能为空");
     setTimeout(() => {
       uni.navigateBack();
@@ -247,7 +259,7 @@ onLoad((options) => {
 
 onShow(() => {
   // 页面显示时刷新数据
-  if (orderId) {
+  if (orderSn.value) {
     refreshOrderDetail();
   }
 });
@@ -260,15 +272,60 @@ onHide(() => {
 const loadOrderDetail = async () => {
   loading.value = true;
   try {
-    // 调用接口获取订单详情
-    const res = await uni.request({
-      url: `/api/order/detail/${orderId}`,
-      method: "GET",
-      data: { channel },
-    });
+    // 调用API获取订单详情
+    const res = await getOmsOrderDetail(orderSn.value, channel.value);
+    console.log("获取订单详情响应:", res);
 
-    if (res.data.code === 0) {
-      orderDetail.value = res.data.data;
+    if (res) {
+      const data = res;
+
+      // 转换数据格式，适配前端页面
+      orderDetail.value = {
+        id: data.id,
+        orderSn: data.orderSn,
+        status: statusEnumMap[data.status],
+        statusText: data.statusText,
+        statusDesc: data.statusDesc,
+        createTime: data.createTime,
+        payTime: data.paymentTime,
+        deliveryTime: data.deliveryTime,
+        completeTime: data.receiveTime,
+        goodsList: data.orderItems
+          ? data.orderItems.map((item) => ({
+              id: item.skuId,
+              title: item.spuName,
+              image: item.picUrl,
+              spec: item.skuName,
+              price: item.price / 100, // 分转元
+              quantity: item.quantity,
+            }))
+          : [],
+        goodsAmount: data.totalAmount / 100, // 分转元
+        discount: (data.couponAmount || 0) / 100, // 分转元
+        shippingFee: (data.freightAmount || 0) / 100, // 分转元
+        totalAmount: data.paymentAmount / 100, // 分转元
+        address: data.receiverName
+          ? {
+              receiver: data.receiverName,
+              phone: data.receiverPhone,
+              detail: data.receiverFullAddress,
+            }
+          : null,
+        logistics: data.deliveryCompany
+          ? {
+              company: data.deliveryCompany,
+              number: data.deliverySn,
+              status: data.deliveryStatus,
+              statusText: data.deliveryStatusText,
+            }
+          : null,
+        payMethod: data.paymentMethodText,
+        remark: data.remark,
+        canRefund: data.canRefund,
+        canReturn: data.canReturn,
+        canRebuy: data.canRebuy,
+        isCommented: data.isCommented,
+      };
 
       // 构建信息列表
       buildInfoList();
@@ -291,7 +348,7 @@ const refreshOrderDetail = () => {
 const buildInfoList = () => {
   const info = [];
 
-  info.push({ label: "订单编号", value: orderDetail.value.orderNo });
+  info.push({ label: "订单编号", value: orderDetail.value.orderSn });
   info.push({ label: "下单时间", value: formatTime(orderDetail.value.createTime) });
 
   if (orderDetail.value.payTime) {

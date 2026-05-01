@@ -194,36 +194,43 @@ const tabCurrentIndex = ref(0); // 当前选中的标签索引
 // 导航标签列表
 const navList = ref([
   {
-    status: 0, // 0表示全部
-    text: "全部",
-    loadingType: "more",
-    orderList: [],
-    loaded: false,
-  },
-  {
-    status: 1, // 待付款
+    status: 0, // 待付款
     text: "待付款",
     loadingType: "more",
     orderList: [],
     loaded: false,
   },
   {
-    status: 2, // 待发货
+    status: 1, // 待发货
     text: "待发货",
     loadingType: "more",
     orderList: [],
     loaded: false,
   },
   {
-    status: 3, // 已发货
+    status: 2, // 已发货
     text: "已发货",
     loadingType: "more",
     orderList: [],
     loaded: false,
   },
   {
-    status: 4, // 已完成
+    status: 3, // 已完成
     text: "已完成",
+    loadingType: "more",
+    orderList: [],
+    loaded: false,
+  },
+  {
+    status: 4, // 4已取消
+    text: "已取消",
+    loadingType: "more",
+    orderList: [],
+    loaded: false,
+  },
+  {
+    status: 5, // 5售后中
+    text: "售后中",
     loadingType: "more",
     orderList: [],
     loaded: false,
@@ -232,13 +239,13 @@ const navList = ref([
 
 // 订单状态映射 - 使用后端的状态码
 const orderStatusMap = {
-  0: "全部订单",
-  1: "待付款",
-  2: "待发货",
-  3: "已发货",
-  4: "已完成",
+  // 0: "全部订单",
+  0: "待付款",
+  1: "待发货",
+  2: "已发货",
+  3: "已完成",
+  4: "已取消",
   5: "已关闭",
-  6: "已取消",
 };
 
 // 新增：退款类型常量
@@ -333,7 +340,7 @@ const goToOrderDetail = (order) => {
 
   // 跳转到订单详情页面
   uni.navigateTo({
-    url: `/packageD/pages/order/detail?id=${order.id}&channel=1`,
+    url: `/packageD/pages/order/detail?orderSn=${order.orderSn}&channel=1`,
     fail: (err) => {
       console.error("跳转到订单详情页失败:", err);
       uni.showToast({
