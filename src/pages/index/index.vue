@@ -90,17 +90,17 @@
       </view>
     </view>
 
-    <view v-if="adverts.length > 0" >
-        <!-- ✅ 简约版欢迎语 -->
-        <view v-for="(advert, index) in adverts" :key="index" class="simple-welcome">
-          <text>🎉 {{ advert.homeAdvertName || "欢迎 来到可我不敌心动" }}🎉</text>
-        </view>
+    <view v-if="adverts.length > 0">
+      <!-- ✅ 简约版欢迎语 -->
+      <view v-for="(advert, index) in adverts" :key="index" class="simple-welcome">
+        <text>🎉 {{ advert.homeAdvertName || "欢迎 来到可我不敌心动" }}🎉</text>
+      </view>
     </view>
 
     <!-- 默认分类 -->
-    <view v-else >
+    <view v-else>
       <view class="simple-welcome">
-      <text>🎉 {{ "欢迎 来到可我不敌心动" }}🎉</text>
+        <text>🎉 {{ "欢迎 来到可我不敌心动" }}🎉</text>
       </view>
     </view>
 
@@ -232,7 +232,7 @@
 
 <script setup>
 // 这是使用 <script setup>语法的纯 Vue3 版本，没有使用 export default和 setup()函数。所有的响应式数据、计算属性和方法都在 <script setup>中直接声明，这是 Vue3 最简洁的写法。
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onLoad } from "vue";
 import {
   onShareAppMessage,
   onShareTimeline,
@@ -263,8 +263,18 @@ const defaultCateIcon = "https://cdn.aioveu.com/aioveu/aioveu-server/avatar/avat
 
 // 默认分类数据
 const defaultCarouselList = ref([
-  { id: 1, title: "小王", imageUrl: "https://cdn.aioveu.com/aioveu/1001/image/20260407/c43dd45d2225419ea807a8b4f592dd30.png" },
-  { id: 2, title: "故宫", imageUrl: "https://cdn.aioveu.com/aioveu/1001/image/20260407/3f69d9aa9dc84685ba85f6ca6d3db2bb.png" },
+  {
+    id: 1,
+    title: "小王",
+    imageUrl:
+      "https://cdn.aioveu.com/aioveu/1001/image/20260407/c43dd45d2225419ea807a8b4f592dd30.png",
+  },
+  {
+    id: 2,
+    title: "故宫",
+    imageUrl:
+      "https://cdn.aioveu.com/aioveu/1001/image/20260407/3f69d9aa9dc84685ba85f6ca6d3db2bb.png",
+  },
 ]);
 
 // 默认分类数据
@@ -286,15 +296,28 @@ const defaultAdvert = ref([
     jumpType: "navigateTo",
     height: 210,
     imageMode: "scaleToFill",
-  }
+  },
 ]);
 
 // 生命周期
 // 页面显示时触发
 onMounted(() => {
   console.log("首页页面加载");
+
+  const accountInfo = wx.getAccountInfoSync();
+  console.log("当前小程序AppID:", accountInfo.miniProgram.appId);
+  console.log("当前小程序名称:", accountInfo.miniProgram.envVersion);
+
+  // 弹窗显示
+  // wx.showModal({
+  //   title: "当前AppID",
+  //   content: accountInfo.miniProgram.appId,
+  //   showCancel: false,
+  // });
+
   loadData();
 });
+
 
 //在 uni-app 中，onPullDownRefresh是全局函数，直接从 uni-app框架中导入，不需要手动导入。
 // 下拉刷新 - 这是全局函数
@@ -305,7 +328,7 @@ onPullDownRefresh(async () => {
 
 // 分享功能
 onShareAppMessage(() => ({
-  title: SHARE_CONFIG.TITLE,  // 统一使用这里的标题
+  title: SHARE_CONFIG.TITLE, // 统一使用这里的标题
   path: "/pages/index/index",
   imageUrl: "",
   success: (res) => {
@@ -317,9 +340,9 @@ onShareAppMessage(() => ({
 }));
 
 onShareTimeline(() => ({
-  title: SHARE_CONFIG.TITLE,  // 统一使用这里的标题
-  query: SHARE_CONFIG.DEFAULT_QUERY,  // 统一使用这里的参数
-  imageUrl: SHARE_CONFIG.IMAGE_URL,  // 统一使用这里的图片
+  title: SHARE_CONFIG.TITLE, // 统一使用这里的标题
+  query: SHARE_CONFIG.DEFAULT_QUERY, // 统一使用这里的参数
+  imageUrl: SHARE_CONFIG.IMAGE_URL, // 统一使用这里的图片
   success: (res) => {
     console.log("分享到朋友圈成功", res);
   },

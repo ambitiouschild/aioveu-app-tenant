@@ -29,7 +29,12 @@
     "ignore": [],
     "include": []
   },
-  "appid": "wxe510ad6d4d60bfa8",
+  "appid": "wxe0e6720ed2db3937",
+  //小程序的 appid 主要配置在 project.config.json文件中
+  //      "appid" : "wxe510ad6d4d60bfa8",（可我不敌心动）
+  //      "appid" : "wxe0e6720ed2db3937",（可我不敌心欢）
+  //      "appid" : "wxd25369beff763442",（可我不敌心疼）
+
   "editorSetting": {},
   "libVersion": "3.12.0"
 }
