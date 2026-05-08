@@ -3,18 +3,9 @@
     <!-- 轮播图区域 -->
     <view class="carousel">
       <swiper indicator-dots circular="true" duration="400" autoplay>
-        <swiper-item
-          class="swiper-item"
-          v-for="(item, index) in goodsInfo.album"
-          :key="index"
-        >
+        <swiper-item class="swiper-item" v-for="(item, index) in goodsInfo.album" :key="index">
           <view class="image-wrapper">
-            <image
-              :src="item"
-              class="loaded"
-              mode="aspectFill"
-              lazy-load
-            ></image>
+            <image :src="item" class="loaded" mode="aspectFill" lazy-load></image>
           </view>
         </swiper-item>
       </swiper>
@@ -56,10 +47,7 @@
       <view class="c-row b-b" @click="toggleSpec('all')">
         <text class="tit">购买类型</text>
         <view class="con">
-          <text
-            v-if="selectedSku.name"
-            class="selected-text"
-          >
+          <text v-if="selectedSku.name" class="selected-text">
             {{ selectedSku.name }}
           </text>
           <text v-else class="selected-text">请选择规格</text>
@@ -72,11 +60,7 @@
         <text class="tit">购买数量</text>
         <view class="con">
           <view class="stepper">
-            <view
-              class="minus"
-              :class="{ disabled: quantity <= 1 }"
-              @click="decreaseQuantity"
-            >
+            <view class="minus" :class="{ disabled: quantity <= 1 }" @click="decreaseQuantity">
               <text class="yticon icon-jianhao"></text>
             </view>
             <input
@@ -144,7 +128,9 @@
         ></image>
         <view class="right">
           <text class="name">可我不敌心动</text>
-          <text class="con">商品收到了，79元两件，质量不错，试了一下有点瘦，但是加个外罩很漂亮，我很喜欢,可我不敌心动</text>
+          <text class="con">
+            商品收到了，79元两件，质量不错，试了一下有点瘦，但是加个外罩很漂亮，我很喜欢,可我不敌心动
+          </text>
           <view class="bot">
             <text class="attr">购买类型：XL 红色</text>
             <text class="time">2026-03-24 10:21</text>
@@ -164,31 +150,19 @@
     <!-- 底部操作菜单（固定定位） -->
     <view class="page-bottom">
       <!-- 首页导航 -->
-      <navigator
-        url="/pages/index/index"
-        open-type="switchTab"
-        class="p-b-btn"
-      >
+      <navigator url="/pages/index/index" open-type="switchTab" class="p-b-btn">
         <text class="yticon icon-xiatubiao--copy"></text>
         <text>首页</text>
       </navigator>
 
       <!-- 购物车导航 -->
-      <navigator
-        url="/pages/cart/cart"
-        open-type="switchTab"
-        class="p-b-btn"
-      >
+      <navigator url="/pages/cart/cart" open-type="switchTab" class="p-b-btn">
         <text class="yticon icon-gouwuche"></text>
         <text>购物车</text>
       </navigator>
 
       <!-- 收藏按钮 -->
-      <view
-        class="p-b-btn"
-        :class="{ active: isFavorite }"
-        @click="toggleFavorite"
-      >
+      <view class="p-b-btn" :class="{ active: isFavorite }" @click="toggleFavorite">
         <text class="yticon icon-shoucang"></text>
         <text>收藏</text>
       </view>
@@ -196,19 +170,11 @@
       <!-- 购买操作按钮组 -->
       <view class="action-btn-group">
         <!-- 立即购买按钮 -->
-        <button
-          type="primary"
-          class="action-btn no-border buy-now-btn"
-          @click="handleBuyNow"
-        >
+        <button type="primary" class="action-btn no-border buy-now-btn" @click="handleBuyNow">
           立即购买
         </button>
         <!-- 加入购物车按钮 -->
-        <button
-          type="primary"
-          class="action-btn no-border add-cart-btn"
-          @click="handleAddToCart"
-        >
+        <button type="primary" class="action-btn no-border add-cart-btn" @click="handleAddToCart">
           加入购物车
         </button>
       </view>
@@ -242,22 +208,39 @@
                 {{ sItem.value }}
               </text>
             </view>
+
+            <!-- 添加规格状态提示 -->
+            <view class="spec-status">
+              <text
+                :class="{
+                  'text-success': isSpecComplete,
+                  'text-warning': !isSpecComplete && selectedSpecValues.length > 0,
+                  'text-error': false,
+                }"
+              >
+                {{ specHintText }}
+              </text>
+            </view>
           </view>
         </view>
 
+        <!--        // 2. 在模板中直接显示提示-->
+        <view class="spec-section" v-if="specHintText">
+          <text>{{ specHintText }}</text>
+        </view>
+
         <!-- 规格选项列表 -->
-        <view
-          v-for="(spec, specIndex) in specList"
-          :key="spec.id || specIndex"
-          class="attr-list"
-        >
+        <view v-for="(spec, specIndex) in specList" :key="spec.id || specIndex" class="attr-list">
           <text>{{ spec.name }}</text>
           <view class="item-list">
             <text
               v-for="(specItem, specItemIndex) in spec.values"
               :key="specItem.id"
               class="tit"
-              :class="{ selected: specItem.selected, disabled: !checkSpecAvailable(specIndex, specItemIndex) }"
+              :class="{
+                selected: specItem.selected,
+                disabled: !checkSpecAvailable(specIndex, specItemIndex),
+              }"
               @click="handleSelectSpec(specIndex, specItemIndex)"
             >
               {{ specItem.value }}
@@ -269,11 +252,7 @@
         <view class="quantity-section">
           <text class="quantity-label">购买数量</text>
           <view class="quantity-stepper">
-            <view
-              class="minus"
-              :class="{ disabled: quantity <= 1 }"
-              @click="decreaseQuantity"
-            >
+            <view class="minus" :class="{ disabled: quantity <= 1 }" @click="decreaseQuantity">
               <text class="yticon icon-jianhao"></text>
             </view>
             <input
@@ -308,7 +287,8 @@
                 <view class="coupon-item__left">
                   <view class="coupon-left-content">
                     <view>
-                      <text class="coupon-discount">1</text>折
+                      <text class="coupon-discount">1</text>
+                      折
                     </view>
                     <view class="coupon-condition">满1000元可用</view>
                   </view>
@@ -339,31 +319,28 @@
     </view>
 
     <!-- 分享组件 -->
-    <share
-      ref="shareRef"
-      :contentHeight="580"
-      :shareList="shareList"
-    ></share>
+    <share ref="shareRef" :contentHeight="580" :shareList="shareList"></share>
   </view>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch, nextTick } from 'vue';
-import { onLoad, onReady } from '@dcloudio/uni-app';
-import share from '@/components/share';
-import { getSpuDetail } from '@/api/pms/goods';
-import { addCartItem } from '@/api/oms/cart';
+import { ref, computed, onMounted, watch, nextTick } from "vue";
+import { onLoad, onReady } from "@dcloudio/uni-app";
+import share from "@/components/share";
+import { getSpuDetail } from "@/api/pms/goods";
+import { addCartItem } from "@/api/oms/cart";
 
 // 响应式数据定义
-const goodsInfo = ref({ // 商品基本信息
+const goodsInfo = ref({
+  // 商品基本信息
   id: undefined,
-  name: '',
+  name: "",
   originPrice: 0,
   price: 0,
   album: [],
-  detail: '',
+  detail: "",
   sales: 0,
-  viewCount: 0
+  viewCount: 0,
 });
 
 const attributeList = ref([]); // 商品属性列表
@@ -371,7 +348,7 @@ const specList = ref([]); // 商品规格列表
 const skuList = ref([]); // SKU库存列表
 const isFavorite = ref(false); // 收藏状态
 const shareList = ref([]); // 分享列表
-const specClass = ref('none'); // 规格弹窗状态: none/hide/show
+const specClass = ref("none"); // 规格弹窗状态: none/hide/show
 const selectedSku = ref({}); // 当前选中的SKU
 const selectedSpecValues = ref([]); // 当前选中的规格值列表
 const addCartMode = ref(false); // 是否加入购物车模式
@@ -395,13 +372,13 @@ const isAllSpecsSelected = computed(() => {
 // 页面加载
 onLoad((options) => {
   const goodsId = options.id;
-  console.log('🚀 页面参数:', options);
-  console.log('🚀 进入商品详情页，商品ID:', goodsId);
+  console.log("🚀 页面参数:", options);
+  console.log("🚀 进入商品详情页，商品ID:", goodsId);
 
   if (!goodsId) {
     uni.showToast({
-      title: '商品ID不能为空',
-      icon: 'none'
+      title: "商品ID不能为空",
+      icon: "none",
     });
     uni.navigateBack();
     return;
@@ -416,16 +393,16 @@ onLoad((options) => {
  */
 const loadGoodsDetail = async (goodsId) => {
   try {
-    uni.showLoading({ title: '加载中...' });
+    uni.showLoading({ title: "加载中..." });
 
     const response = await getSpuDetail(goodsId);
-    console.log('🚀 加载商品详情:', response);
+    console.log("🚀 加载商品详情:", response);
 
     const {
       goodsInfo: spuInfo,
       attributeList: attrs,
-      specList: specs,    // ← 这里是规格列表
-      skuList: skus
+      specList: specs, // ← 这里是规格列表
+      skuList: skus,
     } = response || {};
 
     // 更新商品信息
@@ -444,12 +421,11 @@ const loadGoodsDetail = async (goodsId) => {
       // 初始化规格选择
       initSpecSelectionFromSku(selectedSku.value);
     }
-
   } catch (error) {
-    console.error('加载商品详情失败:', error);
+    console.error("加载商品详情失败:", error);
     uni.showToast({
-      title: '加载商品详情失败',
-      icon: 'none'
+      title: "加载商品详情失败",
+      icon: "none",
     });
   } finally {
     uni.hideLoading();
@@ -465,12 +441,12 @@ const initSpecSelectionFromSku = (sku) => {
   selectedSpecValues.value = [];
 
   // 解析SKU的规格ID
-  const specIds = sku.specIds.split('_').map(id => parseInt(id));
+  const specIds = sku.specIds.split("_").map((id) => parseInt(id));
 
   // 查找对应的规格值
-  specList.value.forEach(spec => {
+  specList.value.forEach((spec) => {
     if (spec.values && spec.values.length > 0) {
-      spec.values.forEach(value => {
+      spec.values.forEach((value) => {
         if (specIds.includes(value.id)) {
           value.selected = true;
           selectedSpecValues.value.push(value);
@@ -483,44 +459,152 @@ const initSpecSelectionFromSku = (sku) => {
 };
 
 /**
- * 检查规格是否可用
+ * 检查规格是否可用（替代原来的简单true返回）
  */
 const checkSpecAvailable = (specIndex, specValueIndex) => {
   // 这里可以添加规格可用性检查逻辑
   // 比如检查库存、是否可售等
   return true;
+
+  // const spec = specList.value[specIndex];
+  // if (!spec || !spec.values) return false;
+  //
+  // const specValue = spec.values[specValueIndex];
+  // if (!specValue) return false;
+  //
+  // // 使用 checkSpecAvailability 检查是否有库存
+  // return checkSpecAvailability(specValue.id);
 };
 
 /**
  * 更新选中的SKU
+ * SKU匹配逻辑过于严格：你的updateSelectedSku函数可能只处理完全匹配（所有规格都选中的情况），
+ * 当用户只选择部分规格时无法匹配
+ * 这样修改后，你的规格选择功能应该就能正确工作了。用户只选择一个规格时，也能找到对应的SKU（如果有的话）。
  */
 const updateSelectedSku = () => {
+  console.log("🔄 开始更新选中的SKU");
+
+  // 1. 获取选中的规格ID数组
+  const selectedSpecIds = selectedSpecValues.value
+    .map((item) => item.id)
+    .filter((id) => id != null) // 过滤掉undefined/null
+    .map((id) => parseInt(id)) // 确保是数字类型
+    .sort((a, b) => a - b); // 升序排序
+
+  console.log("📊 当前选中的规格ID:", selectedSpecIds);
+  console.log("📦 可用SKU列表:", skuList.value);
+
   if (selectedSpecValues.value.length === 0) {
+    console.log("未选择任何规格，跳过SKU匹配");
     selectedSku.value = {};
+
+    // 重置数量为1
+    quantity.value = 1;
     return;
   }
-
-  // 获取选中的规格ID数组
-  const selectedSpecIds = selectedSpecValues.value.map(item => item.id).sort();
-
+  // 3. 查找匹配的SKU
+  let matchedSku = null;
   // 查找匹配的SKU
-  const matchedSku = skuList.value.find(sku => {
-    if (!sku.specIds) return false;
-    const skuSpecIds = sku.specIds.split('_').map(id => parseInt(id)).sort();
-    return selectedSpecIds.length === skuSpecIds.length &&
-      selectedSpecIds.every((id, index) => id === skuSpecIds[index]);
+  matchedSku = skuList.value.find((sku) => {
+    if (!sku || !sku.specIds) return false;
+    const skuSpecIds = sku.specIds
+      .split("_")
+      .map((id) => parseInt(id))
+      .filter((id) => !isNaN(id))
+      .sort((a, b) => a - b);
+
+    // 完全匹配：选中规格 = SKU规格
+    if (selectedSpecIds.length === skuSpecIds.length) {
+      return selectedSpecIds.every((id, index) => id === skuSpecIds[index]);
+    }
+
+    return false;
   });
+
+  // 4. 如果没有完全匹配的SKU，尝试部分匹配
+  if (!matchedSku && selectedSpecIds.length > 0) {
+    console.log("🔍 未找到完全匹配的SKU，尝试查找部分匹配...");
+
+    matchedSku = skuList.value.find((sku) => {
+      if (!sku || !sku.specIds) return false;
+
+      const skuSpecIds = sku.specIds
+        .split("_")
+        .map((id) => parseInt(id))
+        .filter((id) => !isNaN(id))
+        .sort((a, b) => a - b);
+
+      // 部分匹配：选中的规格是SKU规格的子集
+      return selectedSpecIds.every((id) => skuSpecIds.includes(id));
+    });
+  }
 
   selectedSku.value = matchedSku || {};
 
-  // 如果未找到匹配的SKU，显示提示
-  if (!matchedSku) {
-    console.warn('未找到匹配的SKU');
+  if (matchedSku) {
+    console.log("✅ 找到匹配的SKU:", {
+      id: matchedSku.id,
+      specIds: matchedSku.specIds,
+      price: matchedSku.price,
+      stock: matchedSku.stock,
+    });
+  } else {
+    console.warn("⚠️ 未找到匹配的SKU");
   }
 
   // 重置数量为1
   quantity.value = 1;
+
+  console.log("📄 最终选中的SKU:", selectedSku.value);
 };
+
+//额外优化：添加规格可用性检查
+// 检查规格是否可用（有库存）
+const checkSpecAvailability = (specId) => {
+  if (!skuList.value || skuList.value.length === 0) {
+    return false;
+  }
+
+  // 查找包含该规格且有库存的SKU
+  return skuList.value.some((sku) => {
+    if (!sku.specIds || sku.stock <= 0) return false;
+
+    const skuSpecIds = sku.specIds.split("_").map((id) => parseInt(id));
+    return skuSpecIds.includes(parseInt(specId)) && sku.stock > 0;
+  });
+};
+
+// 计算属性：获取当前规格是否完整
+const isSpecComplete = computed(() => {
+  if (!selectedSku.value || !selectedSku.value.specIds) {
+    return false;
+  }
+
+  const selectedSpecIds = selectedSpecValues.value.map((item) => item.id).sort();
+  const skuSpecIds = selectedSku.value.specIds
+    .split("_")
+    .map((id) => parseInt(id))
+    .sort();
+
+  return (
+    selectedSpecIds.length === skuSpecIds.length &&
+    selectedSpecIds.every((id, index) => id === skuSpecIds[index])
+  );
+});
+
+// 计算属性：获取规格提示文本
+const specHintText = computed(() => {
+  if (selectedSpecValues.value.length === 0) {
+    return "请选择规格";
+  }
+
+  if (isSpecComplete.value) {
+    return "规格已选完整";
+  }
+
+  return "请继续选择规格";
+});
 
 /**
  * 格式化富文本（处理图片自适应）
@@ -530,7 +614,6 @@ const updateSelectedSku = () => {
 // 正则表达式不够完善：无法正确处理带空格的标签
 // 样式替换不完整：可能无法覆盖所有图片样式
 // 缺少容错处理：对异常HTML结构处理不够健壮
-
 
 // const formatRichText = (html) => {
 //   if (!html) return '';
@@ -545,29 +628,32 @@ const updateSelectedSku = () => {
 //   });
 // };
 
-
-
 const formatRichText = (html) => {
-  if (!html) return '';
+  if (!html) return "";
 
-  return html
-    // 处理没有style属性的img标签
-    .replace(/<img\b(?![^>]*style)([^>]*)>/gi, '<img style="max-width: 100% !important; height: auto !important;" $1>')
-    // 处理有style属性的img标签
-    .replace(/<img\b([^>]*)style=["']([^"']*)["']([^>]*)>/gi, (match, before, style, after) => {
-      // 清理原有样式中的尺寸设置
-      const cleanedStyle = style
-        .replace(/(max-)?width\s*:\s*[^;]+;?\s*/gi, '')
-        .replace(/(max-)?height\s*:\s*[^;]+;?\s*/gi, '')
-        .trim();
+  return (
+    html
+      // 处理没有style属性的img标签
+      .replace(
+        /<img\b(?![^>]*style)([^>]*)>/gi,
+        '<img style="max-width: 100% !important; height: auto !important;" $1>'
+      )
+      // 处理有style属性的img标签
+      .replace(/<img\b([^>]*)style=["']([^"']*)["']([^>]*)>/gi, (match, before, style, after) => {
+        // 清理原有样式中的尺寸设置
+        const cleanedStyle = style
+          .replace(/(max-)?width\s*:\s*[^;]+;?\s*/gi, "")
+          .replace(/(max-)?height\s*:\s*[^;]+;?\s*/gi, "")
+          .trim();
 
-      return `<img${before}style="${cleanedStyle}; max-width: 100% !important; height: auto !important;"${after}>`;
-    })
-    // 移除内联的width/height属性
-    .replace(/\b(width|height)\s*=\s*["'][^"']*["']/gi, '')
-    // 清理多余的空格
-    .replace(/\s{2,}/g, ' ')
-    .trim();
+        return `<img${before}style="${cleanedStyle}; max-width: 100% !important; height: auto !important;"${after}>`;
+      })
+      // 移除内联的width/height属性
+      .replace(/\b(width|height)\s*=\s*["'][^"']*["']/gi, "")
+      // 清理多余的空格
+      .replace(/\s{2,}/g, " ")
+      .trim()
+  );
 };
 
 /**
@@ -576,7 +662,7 @@ const formatRichText = (html) => {
  * @returns {string} 格式化后的金额
  */
 const formatMoney = (money) => {
-  if (!money && money !== 0) return '0.00';
+  if (!money && money !== 0) return "0.00";
   return (money / 100).toFixed(2);
 };
 
@@ -585,26 +671,26 @@ const formatMoney = (money) => {
  * @param {string} action - 操作类型: 'all'查看所有, 'close'关闭
  */
 const toggleSpec = (action) => {
-  if (action === 'close') {
-    if (specClass.value === 'show') {
-      specClass.value = 'hide';
+  if (action === "close") {
+    if (specClass.value === "show") {
+      specClass.value = "hide";
       setTimeout(() => {
-        specClass.value = 'none';
+        specClass.value = "none";
       }, 250);
     }
-  } else if (action === 'all') {
-    if (specClass.value === 'none') {
-      specClass.value = 'show';
+  } else if (action === "all") {
+    if (specClass.value === "none") {
+      specClass.value = "show";
     }
   } else {
     // 默认切换
-    if (specClass.value === 'show') {
-      specClass.value = 'hide';
+    if (specClass.value === "show") {
+      specClass.value = "hide";
       setTimeout(() => {
-        specClass.value = 'none';
+        specClass.value = "none";
       }, 250);
-    } else if (specClass.value === 'none') {
-      specClass.value = 'show';
+    } else if (specClass.value === "none") {
+      specClass.value = "show";
     }
   }
 };
@@ -618,10 +704,12 @@ const handleSelectSpec = (specIndex, specValueIndex) => {
   const spec = specList.value[specIndex];
   if (!spec || !spec.values) return;
 
+  //. 修改 handleSelectSpec（推荐，这样即使没货也能点，点完再提示）
+  // 【修改点】暂时注释掉这行，允许选择所有规格
   // 检查是否可用
-  if (!checkSpecAvailable(specIndex, specValueIndex)) {
-    return;
-  }
+  // if (!checkSpecAvailable(specIndex, specValueIndex)) {
+  //   return;
+  // }
 
   // 更新选中状态
   spec.values.forEach((value, index) => {
@@ -630,8 +718,8 @@ const handleSelectSpec = (specIndex, specValueIndex) => {
 
   // 更新选中的规格值
   selectedSpecValues.value = [];
-  specList.value.forEach(item => {
-    const selectedValue = item.values?.find(v => v.selected);
+  specList.value.forEach((item) => {
+    const selectedValue = item.values?.find((v) => v.selected);
     if (selectedValue) {
       selectedSpecValues.value.push(selectedValue);
     }
@@ -640,23 +728,43 @@ const handleSelectSpec = (specIndex, specValueIndex) => {
   // 更新选中的SKU
   updateSelectedSku();
 
-  console.log('当前选择的SKU:', selectedSku.value);
+  console.log("当前选择的SKU:", selectedSku.value);
 };
 
 /**
  * 确认规格选择
  */
 const handleConfirmSpec = () => {
-  if (!isAllSpecsSelected.value) {
+  if (!isAllSpecsSelected.value || !isSpecComplete.value) {
+    // 添加 isSpecComplete 检查
     uni.showToast({
-      title: '请选择完整规格',
-      icon: 'none'
+      title: specHintText.value, // 使用提示文本
+      icon: "none",
     });
     return;
   }
 
+  // ✅ 新增：检查选中SKU是否有库存
+  if (!selectedSku.value || selectedSku.value.stock <= 0) {
+    uni.showToast({
+      title: "该规格暂无库存，请选择其他规格",
+      icon: "none",
+    });
+    return;
+  }
+
+  // ✅ 新增：检查购买数量是否超过库存
+  if (quantity.value > (selectedSku.value.stock || 0)) {
+    uni.showToast({
+      title: `库存不足，最多可购买 ${selectedSku.value.stock} 件`,
+      icon: "none",
+    });
+    quantity.value = selectedSku.value.stock || 1;
+    return;
+  }
+
   // 关闭弹窗
-  toggleSpec('close');
+  toggleSpec("close");
 
   // 如果是加入购物车模式，执行加入购物车
   if (addCartMode.value) {
@@ -722,10 +830,10 @@ const handleShare = () => {
 const toggleFavorite = async () => {
   isFavorite.value = !isFavorite.value;
 
-  const action = isFavorite.value ? '收藏' : '取消收藏';
+  const action = isFavorite.value ? "收藏" : "取消收藏";
   uni.showToast({
     title: `${action}成功`,
-    icon: 'success'
+    icon: "success",
   });
 
   // TODO: 调用收藏接口
@@ -737,15 +845,21 @@ const toggleFavorite = async () => {
 const handleBuyNow = () => {
   if (!selectedSku.value.id) {
     // 如果没有选择规格，打开弹窗
-    toggleSpec('all');
+    toggleSpec("all");
+    return;
+  }
+
+  //2. 在"立即购买"按钮中添加检查
+  if (!isSpecComplete.value) {
+    toggleSpec("all");
     return;
   }
 
   const skuId = selectedSku.value.id;
   if (!skuId) {
     uni.showToast({
-      title: '请先选择商品规格',
-      icon: 'none'
+      title: "请先选择商品规格",
+      icon: "none",
     });
     return;
   }
@@ -753,12 +867,12 @@ const handleBuyNow = () => {
   uni.navigateTo({
     url: `/pages/order/createOrder?skuId=${skuId}&count=${quantity.value}`,
     fail: (err) => {
-      console.error('跳转失败:', err);
+      console.error("跳转失败:", err);
       uni.showToast({
-        title: '跳转失败',
-        icon: 'none'
+        title: "跳转失败",
+        icon: "none",
       });
-    }
+    },
   });
 };
 
@@ -769,7 +883,7 @@ const handleAddToCart = () => {
   if (!selectedSku.value.id) {
     // 如果没有选择规格，设置模式并打开弹窗
     addCartMode.value = true;
-    toggleSpec('all');
+    toggleSpec("all");
   } else {
     // 如果已经选择了规格，直接加入购物车
     doAddToCart();
@@ -782,40 +896,39 @@ const handleAddToCart = () => {
 const doAddToCart = async () => {
   const skuId = selectedSku.value.id;
 
-  console.log('添加购物车所需要的库存ID:', skuId);
+  console.log("添加购物车所需要的库存ID:", skuId);
   if (!skuId) {
     uni.showToast({
-      title: '请先选择商品规格',
-      icon: 'none'
+      title: "请先选择商品规格",
+      icon: "none",
     });
     return;
   }
 
   try {
-    uni.showLoading({ title: '添加中...' });
+    uni.showLoading({ title: "添加中..." });
 
     await addCartItem(skuId, quantity.value);
 
     uni.showToast({
-      title: '添加成功',
-      icon: 'success'
+      title: "添加成功",
+      icon: "success",
     });
 
     // 延迟跳转，让toast显示完整
     setTimeout(() => {
       uni.switchTab({
-        url: '/pages/cart/cart',
+        url: "/pages/cart/cart",
         fail: (err) => {
-          console.error('跳转到购物车失败:', err);
-        }
+          console.error("跳转到购物车失败:", err);
+        },
       });
     }, 1500);
-
   } catch (error) {
-    console.error('添加购物车失败:', error);
+    console.error("添加购物车失败:", error);
     uni.showToast({
-      title: '添加购物车失败:'+ error.message,
-      icon: 'none'
+      title: "添加购物车失败:" + error.message,
+      icon: "none",
     });
   } finally {
     uni.hideLoading();
@@ -827,7 +940,7 @@ const doAddToCart = async () => {
  */
 const openCouponPopup = () => {
   if (couponPopupRef.value) {
-    couponPopupRef.value.open('bottom');
+    couponPopupRef.value.open("bottom");
   }
 };
 
@@ -836,8 +949,8 @@ const openCouponPopup = () => {
  */
 const handleClaimCoupon = () => {
   uni.showToast({
-    title: '领取成功',
-    icon: 'success'
+    title: "领取成功",
+    icon: "success",
   });
 
   // 关闭弹窗
@@ -852,9 +965,13 @@ const handleClaimCoupon = () => {
 const stopPrevent = () => {};
 
 // 监听选中的规格值变化
-watch(selectedSpecValues, () => {
-  updateSelectedSku();
-}, { deep: true });
+watch(
+  selectedSpecValues,
+  () => {
+    updateSelectedSku();
+  },
+  { deep: true }
+);
 </script>
 
 <style lang="scss" scoped>
@@ -1008,7 +1125,7 @@ watch(selectedSpecValues, () => {
     color: #e54d42;
 
     &::before {
-      content: '';
+      content: "";
       position: absolute;
       left: -20rpx;
       top: -20rpx;
@@ -1068,7 +1185,7 @@ watch(selectedSpecValues, () => {
     position: relative;
 
     &.b-b::after {
-      content: '';
+      content: "";
       position: absolute;
       left: 30rpx;
       right: 0;
@@ -1108,7 +1225,8 @@ watch(selectedSpecValues, () => {
       width: 200rpx;
       height: 60rpx;
 
-      .minus, .plus {
+      .minus,
+      .plus {
         width: 60rpx;
         height: 100%;
         display: flex;
@@ -1286,7 +1404,7 @@ watch(selectedSpecValues, () => {
     }
 
     &::before {
-      content: '';
+      content: "";
       position: absolute;
       left: 50%;
       top: 50%;
@@ -1478,7 +1596,8 @@ watch(selectedSpecValues, () => {
         width: 240rpx;
         height: 70rpx;
 
-        .minus, .plus {
+        .minus,
+        .plus {
           width: 70rpx;
           height: 100%;
           display: flex;
@@ -1536,23 +1655,39 @@ watch(selectedSpecValues, () => {
 
   /* 动画定义 */
   @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 
   @keyframes fadeOut {
-    from { opacity: 1; }
-    to { opacity: 0; }
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
   }
 
   @keyframes slideUp {
-    from { transform: translateY(100%); }
-    to { transform: translateY(0); }
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
   }
 
   @keyframes slideDown {
-    from { transform: translateY(0); }
-    to { transform: translateY(100%); }
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(100%);
+    }
   }
 }
 
