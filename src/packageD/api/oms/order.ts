@@ -8,12 +8,12 @@ const OMSORDER_BASE_URL = "/aioveu-tenant-oms/app-api/v1/orders";
 export function listOrdersWithPage(params :any) {
 	return request({
     url: `${OMSORDER_BASE_URL}`,
-		method: "GET",
-		data: params,
-		header: {
-			'auth': true // 需要认证
-		}
-	})
+    method: "POST",
+    data: params,
+    header: {
+      auth: true, // 需要认证
+    },
+  });
 }
 
 // 订单确认

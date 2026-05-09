@@ -210,24 +210,26 @@
             </view>
 
             <!-- 添加规格状态提示 -->
-            <view class="spec-status">
-              <text
-                :class="{
-                  'text-success': isSpecComplete,
-                  'text-warning': !isSpecComplete && selectedSpecValues.length > 0,
-                  'text-error': false,
-                }"
-              >
-                {{ specHintText }}
-              </text>
-            </view>
+<!--            <view class="spec-status">-->
+<!--              <text-->
+<!--                :class="{-->
+<!--                  'text-success': isSpecComplete,-->
+<!--                  'text-warning': !isSpecComplete && selectedSpecValues.length > 0,-->
+<!--                  'text-error': false,-->
+<!--                }"-->
+<!--              >-->
+<!--                {{ specHintText }}-->
+<!--              </text>-->
+<!--            </view>-->
+
+
           </view>
         </view>
 
         <!--        // 2. 在模板中直接显示提示-->
-        <view class="spec-section" v-if="specHintText">
-          <text>{{ specHintText }}</text>
-        </view>
+<!--        <view class="spec-section" v-if="specHintText">-->
+<!--          <text>{{ specHintText }}</text>-->
+<!--        </view>-->
 
         <!-- 规格选项列表 -->
         <view v-for="(spec, specIndex) in specList" :key="spec.id || specIndex" class="attr-list">
