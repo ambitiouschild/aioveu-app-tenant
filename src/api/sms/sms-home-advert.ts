@@ -1,5 +1,4 @@
 import request from "@/utils/request";
-import {CLIENT_CONFIG, getClientId} from "@/utils/clientManager";
 
 const SMSHOMEADVERT_BASE_URL = "/aioveu-tenant-sms/app-api/v1/sms-home-advert";
 
@@ -9,8 +8,6 @@ const SmsHomeAdvertAPI = {
     /** 获取首页广告配置（增加跳转路径）分页数据 */
     getPage(queryParams?: SmsHomeAdvertPageQuery) {
 
-      const clientId = getClientId() || CLIENT_CONFIG.CLIENT_ID;
-      console.log("登录使用客户端ID:", clientId);
 
       // // 构建查询字符串
       // // 将所有值转换为字符串
@@ -33,9 +30,9 @@ const SmsHomeAdvertAPI = {
       // console.log("使用URLSearchParams或手动拼接:", queryString);
 
         return request<PageResult<SmsHomeAdvertPageVO[]>>({
-            url: `${AUTHADVERT_BASE_URL}/adverts?clientId=${clientId}`,
-            method: "GET",
-            data: clientId,  // 加入 clientId, //GET 请求通常不应该有请求体，参数应该通过 URL 查询字符串传递
+          url: `${AUTHADVERT_BASE_URL}/adverts`,
+          method: "GET",
+          data: queryParams, // 加入 clientId, //GET 请求通常不应该有请求体，参数应该通过 URL 查询字符串传递
         });
     },
     /**

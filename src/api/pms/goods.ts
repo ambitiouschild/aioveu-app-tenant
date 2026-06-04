@@ -1,5 +1,4 @@
 import request from '@/utils/request'
-import {CLIENT_CONFIG, getClientId} from "@/utils/clientManager";
 
 
 const PMSSPU_BASE_URL = "/aioveu-tenant-pms/app-api/v1/spu";
