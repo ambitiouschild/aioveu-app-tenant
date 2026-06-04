@@ -44,9 +44,8 @@ export function listSeckillingSpus() {
  */
 export function getSpuDetail(spuId: number) {
 
-  console.log("登录使用客户端ID:", clientId);
 	return request({
-    url: `${AUTHSPUDETIL_BASE_URL}/${spuId}?clientId=${clientId}`,
+    url: `${AUTHSPUDETIL_BASE_URL}/${spuId}`,
 		method: "GET"
 	})
 }
