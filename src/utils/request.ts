@@ -1,6 +1,6 @@
 import { getToken, clearAll } from "@/utils/cache";
 import { ResultCodeEnum } from "@/enums/ResultCodeEnum";
-
+import { CLIENT_CONFIG, getClientId } from "@/utils/clientManager";
 // utils/request.ts
 import { useUserStore } from "@/store/modules/user"
 
@@ -88,8 +88,7 @@ const requestInterceptor = async (config: any) => {
     }
   } catch (error: any) {
     // token刷新失败，需要重新登录
-    if (error.message === "NOT_LOGGED_IN" ||
-      error.message === "NO_REFRESH_TOKEN") {
+    if (error.message === "NOT_LOGGED_IN" || error.message === "NO_REFRESH_TOKEN") {
       // 跳转到登录页
       // uni.showModal({
       //   title: "提示",
@@ -101,6 +100,15 @@ const requestInterceptor = async (config: any) => {
       // });
     }
     return Promise.reject(error);
+  }
+
+  // ✅ 2. 公共接口：统一加 X-Client-Id（重点）
+  const clientId = getClientId() || CLIENT_CONFIG.CLIENT_ID;
+  console.log("登录使用的客户端ID:", clientId);
+
+  if (clientId) {
+    config.header = config.header || {};
+    config.header["X-Client-Id"] = clientId;
   }
 
   return config;

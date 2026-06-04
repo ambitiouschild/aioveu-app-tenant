@@ -16,8 +16,8 @@
             <text class="mobile">{{ selectedAddress.consigneeMobile }}</text>
           </view>
           <text class="address">
-            {{ selectedAddress.province }} {{ selectedAddress.city }}
-            {{ selectedAddress.district }} {{ selectedAddress.detailAddress }}
+            {{ selectedAddress.province }} {{ selectedAddress.city }} {{ selectedAddress.district }}
+            {{ selectedAddress.detailAddress }}
           </text>
         </view>
 
