@@ -83,8 +83,8 @@ const requestInterceptor = async (config: any) => {
   try {
     // 获取有效的token（会自动刷新）
     const token = await userStore.getValidToken();
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
+    if (token && config.header) {
+      config.header.Authorization = `Bearer ${token}`;
     }
   } catch (error: any) {
     // token刷新失败，需要重新登录
@@ -152,7 +152,7 @@ const responseInterceptor = (response: any) => {
 /**
  * 统一的请求函数
  */
-export default function request<T>(options: UniApp.RequestOptions): Promise<T> {
+export default async function request<T>(options: UniApp.RequestOptions): Promise<T> {
   // console.log("=== 开始请求处理 ===");
 
   // 1. 记录环境变量
@@ -201,16 +201,17 @@ export default function request<T>(options: UniApp.RequestOptions): Promise<T> {
 
   // 应用请求拦截器
   try {
-    Object.assign(processedConfig, requestInterceptor(processedConfig));
+    Object.assign(processedConfig, await requestInterceptor(processedConfig));
+    console.log("应用请求拦截器完成:");
   } catch (error) {
     console.error("请求拦截器错误:", error);
     return Promise.reject(error);
   }
 
   // 处理数据格式
-  const contentType = processedConfig.header?.['Content-Type'] || processedConfig.header?.['content-type'];
+  const contentType =
+    processedConfig.header?.["Content-Type"] || processedConfig.header?.["content-type"];
   processedConfig.data = processData(processedConfig.data, contentType);
-
 
   // 6. 创建完整URL
   const fullUrl = `${baseApi}${processedConfig.url}`;
@@ -223,6 +224,8 @@ export default function request<T>(options: UniApp.RequestOptions): Promise<T> {
 
     // 构建最终请求头
     const requestHeaders = { ...processedConfig.header };
+
+    console.log("构建最终请求头:{}", requestHeaders);
 
     // 关键：只有在没有Authorization头且有token时，才添加Bearer token
     if (!requestHeaders.Authorization) {
@@ -253,7 +256,7 @@ export default function request<T>(options: UniApp.RequestOptions): Promise<T> {
 
         const responseWithConfig = {
           ...response,
-          config: processedConfig
+          config: processedConfig,
         };
 
         // 应用响应拦截器
@@ -262,9 +265,7 @@ export default function request<T>(options: UniApp.RequestOptions): Promise<T> {
 
           // 如果拦截器返回了Promise.reject，走失败流程
           if (interceptorResult && interceptorResult.then && interceptorResult.catch) {
-            interceptorResult
-              .then(resolve)
-              .catch(reject);
+            interceptorResult.then(resolve).catch(reject);
             return;
           }
 
@@ -272,7 +273,6 @@ export default function request<T>(options: UniApp.RequestOptions): Promise<T> {
           const resData = response.data as ResponseData<T>;
 
           if (resData.code === ResultCodeEnum.SUCCESS) {
-
             //这里已经进行了数据解构
             resolve(resData.data);
           } else if (resData.code === ResultCodeEnum.TOKEN_INVALID) {
