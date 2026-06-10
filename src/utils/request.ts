@@ -127,23 +127,20 @@ const responseInterceptor = (response: any) => {
   if (response.statusCode === 401) {
     console.error("❌ 认证失败，状态码 401");
     return Promise.reject({
-      code: 'AUTH_ERROR',
-      message: '认证失败',
-      response
+      code: "AUTH_ERROR",
+      message: "认证失败",
+      response,
     });
   }
 
   // 处理业务错误码
-  if (resData.code === 'A0230') { // token过期
-    uni.showToast({
-      title: '会话已过期，请重新登录',
-      success() {
-        uni.navigateTo({
-          url: `/packageA/pages/login/login`,
-        });
-      }
+  // 业务层 token 失效
+  if (resData.code === ResultCodeEnum.TOKEN_INVALID || resData.code === "A0230") {
+    handleTokenExpiredSync();
+    return Promise.reject({
+      code: resData.code,
+      message: resData.msg || "token失效",
     });
-    return Promise.reject(resData);
   }
 
   return resData;
@@ -275,28 +272,6 @@ export default async function request<T>(options: UniApp.RequestOptions): Promis
           if (resData.code === ResultCodeEnum.SUCCESS) {
             //这里已经进行了数据解构
             resolve(resData.data);
-          } else if (resData.code === ResultCodeEnum.TOKEN_INVALID) {
-            console.log("令牌失效或过期处理");
-
-            /*
-             * 原来 uni.reLaunch是异步的,你当时 没有统一 reject 结构
-             * */
-            // clearAll();
-            // uni.reLaunch({
-            //   url: "/packageA/pages/login/login",
-            // });
-            // reject(resData);
-
-            // ✅ 异步跳转，不阻塞 Promise
-            setTimeout(() => {
-              handleTokenExpiredSync();
-            }, 0);
-
-            // ✅ 必须 reject，否则 Promise 永远 pending
-            reject({
-              code: resData.code,
-              message: resData.msg || "token失效",
-            });
           } else {
             uni.showToast({
               title: resData.msg || "业务处理失败",
