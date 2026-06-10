@@ -41,6 +41,9 @@ const SmsHomeCategoryAPI = {
           url: `${AUTHCATEGORY_BASE_URL}/categories`,
           method: "GET",
           data: queryParams, // 加入 clientId,  //GET 请求通常不应该有请求体，参数应该通过 URL 查询字符串传递
+          header: {
+            skipAuth: true,
+          },
         });
     },
 

@@ -282,10 +282,15 @@ export default async function request<T>(options: UniApp.RequestOptions): Promis
               code: resData.code,
             });
           }
+
+
         } catch (error) {
           console.error("响应拦截器错误:", error);
           reject(error);
         }
+
+
+
       },
       fail: (error) => {
         console.log("❌ 请求失败:", error);

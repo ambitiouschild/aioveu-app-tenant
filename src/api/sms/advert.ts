@@ -10,6 +10,9 @@ export function getAdvertList() {
 
   return request({
     url: `${AUTHBANNERS_BASE_URL}/banners`,
-    method: "GET"
-  })
+    method: "GET",
+    header: {
+      skipAuth: true,
+    },
+  });
 }

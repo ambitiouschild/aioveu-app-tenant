@@ -17,10 +17,12 @@ export function listSpuPages(params:any) {
 
 	return request({
     url: `${AUTHSPU_BASE_URL}/spuLists`,
-		method: "GET",
+    method: "GET",
     data: params,
-
-	})
+    header: {
+      skipAuth: true,
+    },
+  });
 }
 
 /**

@@ -9,9 +9,12 @@ export function getCategoryList(queryParams: PmsCategoryPageQuery) {
 
 	return request({
     url: `${AUTHCATEGORY_BASE_URL}/goodsCategories`,
-		method: "GET",
-    data:queryParams,
-	})
+    method: "GET",
+    data: queryParams,
+    header: {
+      skipAuth: true,
+    },
+  });
 }
 
 
