@@ -277,11 +277,26 @@ export default async function request<T>(options: UniApp.RequestOptions): Promis
             resolve(resData.data);
           } else if (resData.code === ResultCodeEnum.TOKEN_INVALID) {
             console.log("令牌失效或过期处理");
-            clearAll();
-            uni.reLaunch({
-              url: "/packageA/pages/login/login",
+
+            /*
+             * 原来 uni.reLaunch是异步的,你当时 没有统一 reject 结构
+             * */
+            // clearAll();
+            // uni.reLaunch({
+            //   url: "/packageA/pages/login/login",
+            // });
+            // reject(resData);
+
+            // ✅ 异步跳转，不阻塞 Promise
+            setTimeout(() => {
+              handleTokenExpiredSync();
+            }, 0);
+
+            // ✅ 必须 reject，否则 Promise 永远 pending
+            reject({
+              code: resData.code,
+              message: resData.msg || "token失效",
             });
-            reject(resData);
           } else {
             uni.showToast({
               title: resData.msg || "业务处理失败",
@@ -321,4 +336,37 @@ export default async function request<T>(options: UniApp.RequestOptions): Promis
       },
     });
   });
+}
+
+let isTokenExpiredHandling = false;
+
+function handleTokenExpiredSync() {
+  if (isTokenExpiredHandling) {
+    console.log("⚠️ 令牌过期处理正在进行中，跳过重复处理");
+    return;
+  }
+
+  isTokenExpiredHandling = true;
+  console.log("🔄 开始处理令牌过期");
+
+  try {
+    clearAll();
+  } catch (e) {
+    console.warn("清除缓存失败:", e);
+  }
+
+  setTimeout(() => {
+    uni.showToast({
+      title: "登录已过期，请重新登录",
+      icon: "none",
+      duration: 2000,
+    });
+  }, 100);
+
+  setTimeout(() => {
+    uni.reLaunch({
+      url: "/packageA/pages/login/login",
+    });
+    isTokenExpiredHandling = false;
+  }, 1500);
 }
