@@ -34,8 +34,11 @@ export function listSeckillingSpus() {
 
 	return request({
     url: `${AUTHSECKILLING_BASE_URL}/seckilling`,
-		method: "GET",
-	})
+    method: "GET",
+    header: {
+      skipAuth: true,
+    },
+  });
 }
 
 /**
@@ -47,7 +50,10 @@ export function getSpuDetail(spuId: number) {
 
 	return request({
     url: `${AUTHSPUDETIL_BASE_URL}/${spuId}`,
-		method: "GET"
+		method: "GET",
+    header: {
+      skipAuth: true,
+    },
 	})
 }
 
