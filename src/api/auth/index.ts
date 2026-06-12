@@ -57,8 +57,9 @@ const AuthAPI = {
       header: {
         //修改你的 API 文件，使用字符串格式参数
         "Content-Type": "application/x-www-form-urlencoded",
-        Authorization: basicAuth,  // 使用动态生成的认证头
+        Authorization: basicAuth, // 使用动态生成的认证头
         // Authorization: "Basic bWFsbC1hcHA6MTIzNDU2", // 客户端信息Base64加密，明文：mall-app:123456  return 'Basic bWFsbC1hcHA6MTIzNDU2';
+        skipAuth: true,
       },
     });
   },
