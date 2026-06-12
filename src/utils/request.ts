@@ -66,6 +66,15 @@ const processData = (data: any, contentType?: string) => {
 const requestInterceptor = async (config: any) => {
   // console.log("🔧 请求拦截器处理", config);
 
+  // ✅ 公共接口：统一加 X-Client-Id（重点） 一定要先加clientId
+  const clientId = getClientId() || CLIENT_CONFIG.CLIENT_ID;
+  console.log("登录使用的客户端ID:", clientId);
+
+  if (clientId) {
+    config.header = config.header || {};
+    config.header["X-Client-Id"] = clientId;
+  }
+
   // 判断请求是否需要认证
   if (config.header?.auth === true) {
     const token = getToken();
@@ -100,15 +109,6 @@ const requestInterceptor = async (config: any) => {
       // });
     }
     return Promise.reject(error);
-  }
-
-  // ✅ 2. 公共接口：统一加 X-Client-Id（重点）
-  const clientId = getClientId() || CLIENT_CONFIG.CLIENT_ID;
-  console.log("登录使用的客户端ID:", clientId);
-
-  if (clientId) {
-    config.header = config.header || {};
-    config.header["X-Client-Id"] = clientId;
   }
 
   return config;
