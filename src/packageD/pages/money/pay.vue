@@ -50,10 +50,13 @@
 
     <!-- 2. 关键信息摘要（不是完整信息） -->
     <view class="info-summary">
+      <!--      页面展示：orderSn（用户认知）-->
+
       <view class="summary-item">
         <text class="label">订单号</text>
         <text class="value">{{ orderSn }}</text>
       </view>
+
       <view class="summary-item">
         <text class="label">支付金额</text>
         <text class="value amount">¥{{ formatPrice(paymentAmount) }}</text>
@@ -68,28 +71,28 @@
     <!-- 支付方式选择列表 -->
     <view class="pay-type-list">
       <!-- 预存款支付选项 -->
-<!--      <view class="type-item" @click="changePayType('BALANCE')">-->
-<!--        <text class="icon yticon icon-erjiye-yucunkuan"></text>-->
-<!--        <view class="con">-->
-<!--          <text class="tit">预存款支付</text>-->
-<!--          <text>可用余额 ¥{{ formatPrice(balance) }}</text>-->
-<!--        </view>-->
-<!--        <label class="radio">-->
-<!--          <radio value="" color="#fa436a" :checked="payType === 'BALANCE'" />-->
-<!--        </label>-->
-<!--      </view>-->
+      <!--      <view class="type-item" @click="changePayType('BALANCE')">-->
+      <!--        <text class="icon yticon icon-erjiye-yucunkuan"></text>-->
+      <!--        <view class="con">-->
+      <!--          <text class="tit">预存款支付</text>-->
+      <!--          <text>可用余额 ¥{{ formatPrice(balance) }}</text>-->
+      <!--        </view>-->
+      <!--        <label class="radio">-->
+      <!--          <radio value="" color="#fa436a" :checked="payType === 'BALANCE'" />-->
+      <!--        </label>-->
+      <!--      </view>-->
 
       <!-- 模拟支付选项 -->
-<!--      <view class="type-item b-b" @click="changePayType('MOCK')">-->
-<!--        <text class="icon yticon icon-weixinzhifu"></text>-->
-<!--        <view class="con">-->
-<!--          <text class="tit">模拟支付</text>-->
-<!--          <text>测试模拟支付</text>-->
-<!--        </view>-->
-<!--        <label class="radio">-->
-<!--          <radio value="" color="#fa436a" :checked="payType === 'MOCK'" />-->
-<!--        </label>-->
-<!--      </view>-->
+      <!--      <view class="type-item b-b" @click="changePayType('MOCK')">-->
+      <!--        <text class="icon yticon icon-weixinzhifu"></text>-->
+      <!--        <view class="con">-->
+      <!--          <text class="tit">模拟支付</text>-->
+      <!--          <text>测试模拟支付</text>-->
+      <!--        </view>-->
+      <!--        <label class="radio">-->
+      <!--          <radio value="" color="#fa436a" :checked="payType === 'MOCK'" />-->
+      <!--        </label>-->
+      <!--      </view>-->
 
       <!-- 微信支付选项 -->
       <view class="type-item b-b" @click="changePayType('WX_JSAPI')">
@@ -104,16 +107,15 @@
       </view>
 
       <!-- 支付宝支付选项 -->
-<!--      <view class="type-item b-b" @click="changePayType('ALIPAY')">-->
-<!--        <text class="icon yticon icon-alipay"></text>-->
-<!--        <view class="con">-->
-<!--          <text class="tit">支付宝支付</text>-->
-<!--        </view>-->
-<!--        <label class="radio">-->
-<!--          <radio value="" color="#fa436a" :checked="payType === 'ALIPAY'" />-->
-<!--        </label>-->
-<!--      </view>-->
-
+      <!--      <view class="type-item b-b" @click="changePayType('ALIPAY')">-->
+      <!--        <text class="icon yticon icon-alipay"></text>-->
+      <!--        <view class="con">-->
+      <!--          <text class="tit">支付宝支付</text>-->
+      <!--        </view>-->
+      <!--        <label class="radio">-->
+      <!--          <radio value="" color="#fa436a" :checked="payType === 'ALIPAY'" />-->
+      <!--        </label>-->
+      <!--      </view>-->
     </view>
 
     <!-- 确认支付按钮 -->
@@ -144,7 +146,8 @@ import { useUserStore } from "@/store";
 const userStore = useUserStore();
 
 // 响应式数据定义
-const orderSn = ref(""); // 订单编号
+const orderSn = ref(""); // 订单编号 ✅ 展示给用户
+const paymentNo = ref(""); // 支付订单编号 只给代码用（不展示）
 // const appId = ref('');         // appid
 const payType = ref("BALANCE"); // 当前选中的支付方式
 const paymentAmount = ref(0); // 支付金额
@@ -161,7 +164,12 @@ onLoad((options) => {
   console.log("========>> 进入支付页面, 参数：", options);
 
   // 从页面参数中获取订单信息
+  // ✅ 页面展示
   orderSn.value = options.orderSn || "";
+
+  // ✅ 实际支付用
+  paymentNo.value = options.paymentNo || "";
+
   // options.paymentAmount 是分（字符串 "13200"）
   const amountInFen = parseFloat(options.paymentAmount) || 0; // 13200
   paymentAmount.value = amountInFen / 100; // 转换为元：132.00
@@ -173,6 +181,7 @@ onLoad((options) => {
 
   console.log("支付页面加载完成:", {
     orderSn: orderSn.value,
+    paymentNo: paymentNo.value,
     paymentAmount: paymentAmount.value,
     balance: balance.value,
   });
@@ -233,6 +242,16 @@ const handlePay = async () => {
     return;
   }
 
+  if (!paymentNo.value) {
+    uni.showToast({
+      title: "支付订单号不能为空",
+      icon: "none",
+      duration: 2000,
+    });
+    paying.value = false;
+    return;
+  }
+
   if (paymentAmount.value <= 0) {
     uni.showToast({
       title: "支付金额无效",
@@ -276,8 +295,10 @@ const handlePay = async () => {
     console.log("金额转换：页面显示=", paymentAmount.value, "元，后端需要=", amountInFen, "分");
 
     // 调用支付接口
+    // ✅ 这里用 paymentNo
     const response = await pay({
       orderSn: orderSn.value,
+      paymentNo: paymentNo.value,
       // appId: appId.value,
       paymentMethod: payType.value,
       paymentAmount: amountInFen, // 保持单位为分进行比较（推荐）
@@ -320,6 +341,7 @@ const handlePay = async () => {
       });
 
       // 跳转到支付成功页面
+      // ✅ 跳转成功页：用 orderSn
       setTimeout(() => {
         uni.redirectTo({
           //应该使用反引号 `而不是单引号 '来创建模板字符串
@@ -407,7 +429,7 @@ const handlePay = async () => {
   }
 };
 
-//修改 handleJsapiPay返回值：返回结构化结果
+//修改 handleJsapiPay返回值：返回结构化结果 （只验证，不跳转）
 // 处理JSAPI支付（小程序/公众号）
 const handleJsapiPay = (paymentData) => {
   return new Promise((resolve, reject) => {

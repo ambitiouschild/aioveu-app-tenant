@@ -486,26 +486,26 @@ const handleSubmit = async () => {
           console.log("【订单提交】响应:", response);
 
           // 获取订单号
-          const orderSn = response;
-          if (!orderSn) {
-            throw new Error("订单提交失败，未返回订单号");
+          const paymentNo = response;
+          if (!paymentNo) {
+            throw new Error("订单提交失败，未返回支付订单号");
           }
 
-          console.log("【订单提交】提交成功，订单号:", orderSn);
+          console.log("【订单提交】提交成功，支付订单号:", paymentNo);
 
           // 跳转到支付页面
 
-          console.log("【页面跳转】跳转到支付页面");
+          console.log("【页面跳转】跳转到支付订单号对应的支付页面");
           uni.redirectTo({
-            url: `/packageD/pages/money/pay?orderSn=${orderSn}&paymentAmount=${paymentAmount.value}`,
+            url: `/packageD/pages/money/pay?orderSn=${orderSn}&paymentNo=${paymentNo}&paymentAmount=${paymentAmount.value}`,
             fail: (err) => {
-              console.error("跳转到支付页失败:", err);
+              console.error("跳转到支付订单号对应的支付页失败:", err);
               uni.showToast({
                 title: "跳转失败",
                 icon: "none",
                 duration: 2000,
               });
-              // 跳转失败时，可以提供其他操作
+              // 跳转失败时，可以提供其他操作  // ✅ 这里用 orderSn，因为是要给用户看的订单
               showOrderResult(orderSn);
             },
           });
