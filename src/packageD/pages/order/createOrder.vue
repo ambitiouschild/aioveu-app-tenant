@@ -486,18 +486,28 @@ const handleSubmit = async () => {
           console.log("【订单提交】响应:", response);
 
           // 获取订单号
-          const paymentNo = response;
+          const { orderSn, paymentNo, paymentAmount } = response;
+
           if (!paymentNo) {
             throw new Error("订单提交失败，未返回支付订单号");
           }
 
-          console.log("【订单提交】提交成功，支付订单号:", paymentNo);
+          console.log("✅ 订单提交成功", {
+            orderSn,
+            paymentNo,
+            paymentAmount,
+          });
 
           // 跳转到支付页面
 
           console.log("【页面跳转】跳转到支付订单号对应的支付页面");
           uni.redirectTo({
-            url: `/packageD/pages/money/pay?orderSn=${orderSn}&paymentNo=${paymentNo}&paymentAmount=${paymentAmount.value}`,
+            // url: `/packageD/pages/money/pay?orderSn=${orderSn}&paymentNo=${paymentNo}&paymentAmount=${paymentAmount.value}`,
+            url:
+              `/packageD/pages/money/pay` +
+              `?orderSn=${orderSn}` +
+              `&paymentNo=${paymentNo}` +
+              `&paymentAmount=${paymentAmount}`,
             fail: (err) => {
               console.error("跳转到支付订单号对应的支付页失败:", err);
               uni.showToast({
