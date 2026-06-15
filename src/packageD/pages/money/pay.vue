@@ -95,14 +95,37 @@
       <!--      </view>-->
 
       <!-- 微信支付选项 -->
-      <view class="type-item b-b" @click="changePayType('WX_JSAPI')">
+      <view class="type-item b-b" @click="changePayType('WECHAT', 'JSAPI')">
         <text class="icon yticon icon-weixinzhifu"></text>
         <view class="con">
           <text class="tit">微信支付</text>
           <text>推荐使用微信支付</text>
         </view>
         <label class="radio">
-          <radio value="" color="#fa436a" :checked="payType === 'WX_JSAPI'" />
+          <radio
+            value=""
+            color="#fa436a"
+            :checked="paymentChannel === 'WECHAT' && paymentMethod === 'JSAPI'"
+          />
+        </label>
+      </view>
+
+      <view
+        v-for="item in payOptions"
+        :key="item.channel + '-' + item.method"
+        class="type-item b-b"
+        @click="changePayType(item.channel, item.method)"
+      >
+        <image :src="item.icon" class="icon" />
+        <view class="con">
+          <text class="tit">{{ item.label }}</text>
+          <text>{{ item.desc }}</text>
+        </view>
+        <label class="radio">
+          <radio
+            color="#fa436a"
+            :checked="paymentChannel === item.channel && paymentMethod === item.method"
+          />
         </label>
       </view>
 
@@ -149,7 +172,9 @@ const userStore = useUserStore();
 const orderSn = ref(""); // 订单编号 ✅ 展示给用户
 const paymentNo = ref(""); // 支付订单编号 只给代码用（不展示）
 // const appId = ref('');         // appid
-const payType = ref("BALANCE"); // 当前选中的支付方式
+
+const paymentChannel = ref("WECHAT"); // 当前选中的支付渠道
+const paymentMethod = ref("JSAPI"); // 当前选中的支付方式
 const paymentAmount = ref(0); // 支付金额
 
 const paying = ref(false); // 支付中状态，防止重复点击
@@ -158,6 +183,98 @@ const imgalist = ref(["@/static/wxpay.png"]); // 图片预览列表
 
 // 计算属性：从 Vuex 获取用户余额
 const balance = computed(() => userStore.userInfo.balance / 100);
+
+const basePayOptions = [
+  // ✅ 微信 - 小程序 / 公众号
+  {
+    label: "微信支付",
+    channel: "WECHAT",
+    method: "JSAPI",
+    desc: "推荐使用",
+    icon: "/static/wxpay.png",
+  },
+
+  // ✅ 微信 H5
+  {
+    label: "微信支付(H5)",
+    channel: "WECHAT",
+    method: "H5",
+    desc: "手机浏览器",
+    icon: "/static/wxpay.png",
+  },
+
+  // ✅ 微信 APP
+  {
+    label: "微信支付(APP)",
+    channel: "WECHAT",
+    method: "APP",
+    desc: "原生 App",
+    icon: "/static/wxpay.png",
+  },
+
+  // ✅ 微信扫码支付
+  {
+    label: "微信扫码支付",
+    channel: "WECHAT",
+    method: "NATIVE",
+    desc: "PC 端扫码",
+    icon: "/static/wxpay.png",
+  },
+
+  // ✅ 支付宝 APP
+  {
+    label: "支付宝",
+    channel: "ALIPAY",
+    method: "APP",
+    desc: "推荐安卓/iOS",
+    icon: "/static/alipay.png",
+  },
+
+  // ✅ 支付宝 H5
+  {
+    label: "支付宝(H5)",
+    channel: "ALIPAY",
+    method: "WAP",
+    desc: "手机浏览器",
+    icon: "/static/alipay.png",
+  },
+
+  // ✅ 支付宝 PC
+  {
+    label: "支付宝(PC)",
+    channel: "ALIPAY",
+    method: "WEB",
+    desc: "电脑端网页",
+    icon: "/static/alipay.png",
+  },
+
+  // ✅ 余额支付
+  {
+    label: "余额支付",
+    channel: "BALANCE",
+    method: "BALANCE",
+    desc: "使用账户余额",
+    icon: "/static/balance.png",
+  },
+
+  // ✅ 模拟支付（测试环境）
+  {
+    label: "模拟支付",
+    channel: "MOCK",
+    method: "MOCK",
+    desc: "测试专用",
+    icon: "/static/mock.png",
+  },
+];
+
+import { isProd } from "@/utils/env";
+// ✅ 是否生产环境
+// const isProd = ref(process.env.NODE_ENV === "production");
+
+// ✅ 生产环境屏蔽 MOCK
+const payOptions = computed(() =>
+  isProd ? basePayOptions.filter((i) => i.channel !== "MOCK") : basePayOptions
+);
 
 // 页面加载时执行
 onLoad((options) => {
@@ -191,9 +308,13 @@ onLoad((options) => {
  * 切换支付方式
  * @param {string} type - 支付方式类型
  */
-const changePayType = (type) => {
-  payType.value = type;
-  console.log(`切换支付方式为: ${type}`);
+const changePayType = (channel, method) => {
+  paymentChannel.value = channel;
+  paymentMethod.value = method;
+  console.log("✅ 切换支付：", {
+    channel: paymentChannel.value,
+    method: paymentMethod.value,
+  });
 };
 
 /**
@@ -300,7 +421,8 @@ const handlePay = async () => {
       orderSn: orderSn.value,
       paymentNo: paymentNo.value,
       // appId: appId.value,
-      paymentMethod: payType.value,
+      paymentChannel: paymentChannel.value,
+      paymentMethod: paymentMethod.value, // ✅ 方式
       paymentAmount: amountInFen, // 保持单位为分进行比较（推荐）
     });
 
