@@ -143,7 +143,10 @@ const responseInterceptor = (response: any) => {
     });
   }
 
-  return resData;
+  // return resData;
+
+  // ✅ 成功也必须包一层 Promise
+  return Promise.resolve(resData.data);  //resData.data就是 后端 data字段
 };
 
 /**
@@ -261,12 +264,12 @@ export default async function request<T>(options: UniApp.RequestOptions): Promis
           const interceptorResult = responseInterceptor(responseWithConfig);
 
           // 如果拦截器返回了Promise.reject，走失败流程
-          if (interceptorResult && interceptorResult.then && interceptorResult.catch) {
+          if (interceptorResult && interceptorResult.then) {
             interceptorResult.then(resolve).catch(reject);
             return;
           }
 
-          // 正常处理业务响应
+          // ❌ 下面这段代码，永远不可能执行
           const resData = response.data as ResponseData<T>;
 
           if (resData.code === ResultCodeEnum.SUCCESS) {

@@ -95,20 +95,20 @@
       <!--      </view>-->
 
       <!-- 微信支付选项 -->
-      <view class="type-item b-b" @click="changePayType('WECHAT', 'JSAPI')">
-        <text class="icon yticon icon-weixinzhifu"></text>
-        <view class="con">
-          <text class="tit">微信支付</text>
-          <text>推荐使用微信支付</text>
-        </view>
-        <label class="radio">
-          <radio
-            value=""
-            color="#fa436a"
-            :checked="paymentChannel === 'WECHAT' && paymentMethod === 'JSAPI'"
-          />
-        </label>
-      </view>
+      <!--      <view class="type-item b-b" @click="changePayType('WECHAT', 'JSAPI')">-->
+      <!--        <text class="icon yticon icon-weixinzhifu"></text>-->
+      <!--        <view class="con">-->
+      <!--          <text class="tit">微信支付</text>-->
+      <!--          <text>推荐使用微信支付</text>-->
+      <!--        </view>-->
+      <!--        <label class="radio">-->
+      <!--          <radio-->
+      <!--            value=""-->
+      <!--            color="#fa436a"-->
+      <!--            :checked="paymentChannel === 'WECHAT' && paymentMethod === 'JSAPI'"-->
+      <!--          />-->
+      <!--        </label>-->
+      <!--      </view>-->
 
       <view
         v-for="item in payOptions"
@@ -195,76 +195,76 @@ const basePayOptions = [
   },
 
   // ✅ 微信 H5
-  {
-    label: "微信支付(H5)",
-    channel: "WECHAT",
-    method: "H5",
-    desc: "手机浏览器",
-    icon: "/static/wxpay.png",
-  },
-
-  // ✅ 微信 APP
-  {
-    label: "微信支付(APP)",
-    channel: "WECHAT",
-    method: "APP",
-    desc: "原生 App",
-    icon: "/static/wxpay.png",
-  },
-
-  // ✅ 微信扫码支付
-  {
-    label: "微信扫码支付",
-    channel: "WECHAT",
-    method: "NATIVE",
-    desc: "PC 端扫码",
-    icon: "/static/wxpay.png",
-  },
-
-  // ✅ 支付宝 APP
-  {
-    label: "支付宝",
-    channel: "ALIPAY",
-    method: "APP",
-    desc: "推荐安卓/iOS",
-    icon: "/static/alipay.png",
-  },
-
-  // ✅ 支付宝 H5
-  {
-    label: "支付宝(H5)",
-    channel: "ALIPAY",
-    method: "WAP",
-    desc: "手机浏览器",
-    icon: "/static/alipay.png",
-  },
-
-  // ✅ 支付宝 PC
-  {
-    label: "支付宝(PC)",
-    channel: "ALIPAY",
-    method: "WEB",
-    desc: "电脑端网页",
-    icon: "/static/alipay.png",
-  },
-
-  // ✅ 余额支付
-  {
-    label: "余额支付",
-    channel: "BALANCE",
-    method: "BALANCE",
-    desc: "使用账户余额",
-    icon: "/static/balance.png",
-  },
-
-  // ✅ 模拟支付（测试环境）
-  {
-    label: "模拟支付",
-    channel: "MOCK",
-    method: "MOCK",
-    desc: "测试专用",
-    icon: "/static/mock.png",
-  },
+  // {
+  //   label: "微信支付(H5)",
+  //   channel: "WECHAT",
+  //   method: "H5",
+  //   desc: "手机浏览器",
+  //   icon: "/static/wxpay.png",
+  // },
+  //
+  // // ✅ 微信 APP
+  // {
+  //   label: "微信支付(APP)",
+  //   channel: "WECHAT",
+  //   method: "APP",
+  //   desc: "原生 App",
+  //   icon: "/static/wxpay.png",
+  // },
+  //
+  // // ✅ 微信扫码支付
+  // {
+  //   label: "微信扫码支付",
+  //   channel: "WECHAT",
+  //   method: "NATIVE",
+  //   desc: "PC 端扫码",
+  //   icon: "/static/wxpay.png",
+  // },
+  //
+  // // ✅ 支付宝 APP
+  // {
+  //   label: "支付宝",
+  //   channel: "ALIPAY",
+  //   method: "APP",
+  //   desc: "推荐安卓/iOS",
+  //   icon: "/static/alipay.png",
+  // },
+  //
+  // // ✅ 支付宝 H5
+  // {
+  //   label: "支付宝(H5)",
+  //   channel: "ALIPAY",
+  //   method: "WAP",
+  //   desc: "手机浏览器",
+  //   icon: "/static/alipay.png",
+  // },
+  //
+  // // ✅ 支付宝 PC
+  // {
+  //   label: "支付宝(PC)",
+  //   channel: "ALIPAY",
+  //   method: "WEB",
+  //   desc: "电脑端网页",
+  //   icon: "/static/alipay.png",
+  // },
+  //
+  // // ✅ 余额支付
+  // {
+  //   label: "余额支付",
+  //   channel: "BALANCE",
+  //   method: "BALANCE",
+  //   desc: "使用账户余额",
+  //   icon: "/static/balance.png",
+  // },
+  //
+  // // ✅ 模拟支付（测试环境）
+  // {
+  //   label: "模拟支付",
+  //   channel: "MOCK",
+  //   method: "MOCK",
+  //   desc: "测试专用",
+  //   icon: "/static/mock.png",
+  // },
 ];
 
 import { isProd } from "@/utils/env";
@@ -394,7 +394,7 @@ const handlePay = async () => {
   // }
 
   // 检查余额支付是否足够
-  if (payType.value === "BALANCE" && paymentAmount.value > balance.value) {
+  if (paymentChannel.value === "BALANCE" && paymentAmount.value > balance.value) {
     uni.showToast({
       title: "余额不足，请选择其他支付方式",
       icon: "none",
@@ -428,22 +428,22 @@ const handlePay = async () => {
 
     console.log("【后端】返回前端调用第三方支付所需的支付参数", response);
 
-    if (response.code !== "00000") {
-      throw new Error(response.message || "创建支付失败");
-    }
-    const paymentData = response.data;
+    // if (response.code !== "00000") {
+    //   throw new Error(response.message || "创建支付失败");
+    // }
+    const paymentData = response;
 
-    payType.value = paymentData.payType;
+    paymentMethod.value = paymentData.paymentMethod;
 
     // 2. 调用具体的支付方式
     let payResult = null;
 
     // 4. 根据支付方式调用不同的支付接口
-    if (payType.value === "JSAPI") {
+    if (paymentMethod.value === "JSAPI") {
       payResult = await handleJsapiPay(paymentData);
-    } else if (payType.value === "H5") {
+    } else if (paymentMethod.value === "H5") {
       payResult = await handleH5Pay(paymentData);
-    } else if (payType.value === "APP") {
+    } else if (paymentMethod.value === "APP") {
       payResult = await handleAppPay(paymentData);
     } else {
       throw new Error("不支持的支付方式");
