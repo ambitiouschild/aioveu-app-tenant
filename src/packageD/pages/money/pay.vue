@@ -441,38 +441,41 @@ const handlePay = async () => {
     // 4. 根据支付方式调用不同的支付接口
     if (paymentMethod.value === "JSAPI") {
       payResult = await handleJsapiPay(paymentData);
+      // ✅ 不在这里跳转
     } else if (paymentMethod.value === "H5") {
       payResult = await handleH5Pay(paymentData);
+      // ✅ 不在这里跳转
     } else if (paymentMethod.value === "APP") {
       payResult = await handleAppPay(paymentData);
+      // ✅ 不在这里跳转
     } else {
       throw new Error("不支持的支付方式");
     }
 
     // 确保隐藏加载
     uni.hideLoading();
-    if (payResult && payResult.success) {
-      console.log("✅ 支付流程全部完成，准备跳转");
-
-      // ✅ 统一处理支付成功
-      // 支付成功提示
-      uni.showToast({
-        title: "订单支付成功",
-        icon: "success",
-        duration: 2000,
-      });
-
-      // 跳转到支付成功页面
-      // ✅ 跳转成功页：用 orderSn
-      setTimeout(() => {
-        uni.redirectTo({
-          //应该使用反引号 `而不是单引号 '来创建模板字符串
-          url: `/packageD/pages/money/paySuccess?orderSn=${orderSn.value}&amount=${paymentAmount.value}`,
-        });
-      }, 1500);
-    } else {
-      throw new Error("支付结果异常");
-    }
+    // if (payResult && payResult.success) {
+    //   console.log("✅ 支付流程全部完成，准备跳转");
+    //
+    //   // ✅ 统一处理支付成功
+    //   // 支付成功提示
+    //   uni.showToast({
+    //     title: "订单支付成功",
+    //     icon: "success",
+    //     duration: 2000,
+    //   });
+    //
+    //   // 跳转到支付成功页面
+    //   // ✅ 跳转成功页：用 orderSn
+    //   setTimeout(() => {
+    //     uni.redirectTo({
+    //       //应该使用反引号 `而不是单引号 '来创建模板字符串
+    //       url: `/packageD/pages/money/paySuccess?orderSn=${orderSn.value}&amount=${paymentAmount.value}`,
+    //     });
+    //   }, 1500);
+    // } else {
+    //   throw new Error("支付结果异常");
+    // }
 
     // console.log("订单付款结果:", response);
   } catch (error) {
@@ -604,40 +607,42 @@ const handleJsapiPay = (paymentData) => {
       paySign: paymentParams.paySign || "",
 
       success: async (res) => {
-        console.log("【微信支付】支付成功，结果:", res);
+        // console.log("【微信支付】支付成功，结果:", res);
+        console.log("✅ 用户支付完成，开始轮询支付结果");
 
-        try {
-          // 支付成功，查询确认支付状态
-          const PaymentStatusVO = await PayAPI.verifyPaymentStatus(paymentData.paymentNo);
-          console.log("【支付验证】结果:", PaymentStatusVO);
-          const verified = PaymentStatusVO.paymentStatus;
-
-          if (verified && verified === 2) {
-            // 支付验证成功
-            resolve({
-              success: true,
-              data: {
-                orderSn: orderSn.value,
-                amount: paymentAmount.value,
-                paymentNo: paymentData.paymentNo,
-              },
-            });
-          } else {
-            // 支付验证失败
-            uni.showModal({
-              title: "支付异常",
-              content: "支付状态验证失败，请联系客服",
-              showCancel: false,
-              confirmText: "我知道了",
-            });
-            reject(new Error("支付状态验证失败"));
-          }
-        } catch (verifyError) {
-          console.error("验证支付状态失败:", verifyError);
-          reject(verifyError);
-        }
+        // try {
+        //   // 支付成功，查询确认支付状态
+        //   const PaymentStatusVO = await PayAPI.verifyPaymentStatus(paymentData.paymentNo);
+        //   console.log("【支付验证】结果:", PaymentStatusVO);
+        //   const verified = PaymentStatusVO.paymentStatus;
+        //
+        //   if (verified && verified === 2) {
+        //     // 支付验证成功
+        //     resolve({
+        //       success: true,
+        //       data: {
+        //         orderSn: orderSn.value,
+        //         amount: paymentAmount.value,
+        //         paymentNo: paymentData.paymentNo,
+        //       },
+        //     });
+        //   } else {
+        //     // 支付验证失败
+        //     uni.showModal({
+        //       title: "支付异常",
+        //       content: "支付状态验证失败，请联系客服",
+        //       showCancel: false,
+        //       confirmText: "我知道了",
+        //     });
+        //     reject(new Error("支付状态验证失败"));
+        //   }
+        // } catch (verifyError) {
+        //   console.error("验证支付状态失败:", verifyError);
+        //   reject(verifyError);
+        // }
+        startPollingPaymentStatus(paymentData.paymentNo);
+        resolve(); // ✅ 只表示“调起成功”，不代表支付成功  ✅ 不要 resolve({ success: true })
       },
-
       fail: (err) => {
         console.error("【微信支付】支付失败:", err);
 
@@ -665,6 +670,51 @@ const handleJsapiPay = (paymentData) => {
       },
     });
   });
+};
+
+const startPollingPaymentStatus = (paymentNo) => {
+  let times = 0;
+  const timer = setInterval(async () => {
+    times++;
+    try {
+      const res = await PayAPI.verifyPaymentStatus(paymentNo);
+      console.log(`🔁 第 ${times} 次查询支付状态`, res);
+
+      if (res.paymentStatus === 2) {
+        clearInterval(timer);
+        uni.hideLoading();
+        uni.showToast({ title: "支付成功", icon: "success" });
+        setTimeout(() => {
+          uni.redirectTo({
+            url: `/packageD/pages/money/paySuccess?orderSn=${orderSn.value}`,
+          });
+        }, 1500);
+      }
+      // ❌ 支付失败 / 关闭
+      if (res.paymentStatus === 3 || res.paymentStatus === 4) {
+        clearInterval(timer);
+        uni.hideLoading();
+        uni.showModal({
+          title: "支付失败",
+          content: "订单支付失败或已关闭",
+          showCancel: false,
+        });
+      }
+
+      // 超时兜底（30 秒）
+      if (times > 15) {
+        clearInterval(timer);
+        uni.hideLoading();
+        uni.showModal({
+          title: "支付结果未知",
+          content: "请稍后查看订单状态或联系客服",
+          showCancel: false,
+        });
+      }
+    } catch (e) {
+      console.error("查询支付状态失败", e);
+    }
+  }, 2000);
 };
 
 // 处理H5支付
