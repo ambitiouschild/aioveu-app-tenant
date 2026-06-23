@@ -1,20 +1,30 @@
 <template>
   <view class="order-detail-page">
     <!-- 顶部状态栏 -->
-    <view class="status-section" :class="orderDetail.status">
+    <view class="status-section" :class="OrderStatusClass[orderDetail.status]">
       <view class="status-icon">
-        <view v-if="orderDetail.status === 'pending'" class="icon pending">⏳</view>
-        <view v-if="orderDetail.status === 'paid'" class="icon paid">✅</view>
-        <view v-if="orderDetail.status === 'shipped'" class="icon shipped">🚚</view>
-        <view v-if="orderDetail.status === 'completed'" class="icon completed">🎉</view>
-        <view v-if="orderDetail.status === 'cancelled'" class="icon cancelled">❌</view>
-        <view v-if="orderDetail.status === 'refunded'" class="icon refunded">↩️</view>
+        <view v-if="orderDetail.status === OrderStatusEnum.UNPAID" class="icon pending">⏳</view>
+        <view v-if="orderDetail.status === OrderStatusEnum.PAID" class="icon paid">✅</view>
+        <view v-if="orderDetail.status === OrderStatusEnum.SHIPPED" class="icon shipped">🚚</view>
+        <view v-if="orderDetail.status === OrderStatusEnum.COMPLETE" class="icon completed">
+          🎉
+        </view>
+        <view v-if="orderDetail.status === OrderStatusEnum.CANCELED" class="icon cancelled">
+          ❌
+        </view>
+        <view v-if="orderDetail.status === OrderStatusEnum.CLOSED" class="icon refunded">🚫</view>
+        <text v-else-if="orderDetail.status === OrderStatusEnum.SERVICING">🛠️</text>
       </view>
-      <view class="status-text">{{ statusTextMap[orderDetail.status] }}</view>
+      <view class="status-text">
+        {{ OrderStatusLabel[orderDetail.status] }}
+      </view>
       <view v-if="orderDetail.statusDesc" class="status-desc">{{ orderDetail.statusDesc }}</view>
 
       <!-- 待付款倒计时 -->
-      <view v-if="orderDetail.status === 'pending' && orderDetail.expireTime" class="countdown">
+      <view
+        v-if="orderDetail.status === OrderStatusEnum.UNPAID && orderDetail.expireTime"
+        class="countdown"
+      >
         剩余支付时间: {{ formatCountdown(orderDetail.expireTime) }}
       </view>
     </view>
@@ -115,18 +125,20 @@
     <view class="action-buttons">
       <view v-if="showActionButtons" class="button-group">
         <!-- 待付款 -->
-        <template v-if="orderDetail.status === 'pending'">
+        <template v-if="orderDetail.status === OrderStatusEnum.UNPAID">
           <button class="btn secondary" @click="cancelOrder">取消订单</button>
           <button class="btn primary" @click="goToPay">立即支付</button>
         </template>
 
         <!-- 已付款/已发货 -->
-        <template v-if="['paid', 'shipped'].includes(orderDetail.status)">
+        <template
+          v-if="[OrderStatusEnum.PAID, OrderStatusEnum.SHIPPED].includes(orderDetail.status)"
+        >
           <button v-if="orderDetail.canRefund" class="btn secondary" @click="applyRefund">
             申请退款
           </button>
           <button
-            v-if="orderDetail.status === 'shipped'"
+            v-if="orderDetail.status === OrderStatusEnum.SHIPPED"
             class="btn primary"
             @click="confirmReceipt"
           >
@@ -135,7 +147,7 @@
         </template>
 
         <!-- 已完成 -->
-        <template v-if="orderDetail.status === 'completed'">
+        <template v-if="orderDetail.status === OrderStatusEnum.COMPLETE">
           <button v-if="!orderDetail.isCommented" class="btn secondary" @click="goToComment">
             评价商品
           </button>
@@ -147,8 +159,14 @@
           </button>
         </template>
 
-        <!-- 已取消/已退款 -->
-        <template v-if="['cancelled', 'refunded'].includes(orderDetail.status)">
+        <!-- 已取消 / 已关闭 / 售后中 -->
+        <template
+          v-if="
+            [OrderStatusEnum.CANCELED, OrderStatusEnum.CLOSED, OrderStatusEnum.SERVICING].includes(
+              orderDetail.status
+            )
+          "
+        >
           <button class="btn primary" @click="deleteOrder">删除订单</button>
           <button class="btn primary" @click="buyAgain">重新购买</button>
         </template>
@@ -158,7 +176,11 @@
     <!-- 底部操作栏（固定） -->
     <view class="bottom-bar">
       <view class="bottom-actions">
-        <button v-if="orderDetail.status === 'pending'" class="btn bottom-pay" @click="goToPay">
+        <button
+          v-if="orderDetail.status === OrderStatusEnum.UNPAID"
+          class="btn bottom-pay"
+          @click="goToPay"
+        >
           立即支付 ¥{{ orderDetail.totalAmount }}
         </button>
         <view v-else class="contact-section">
@@ -178,20 +200,41 @@
   </view>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { onLoad, onShow, onHide } from "@dcloudio/uni-app";
 import { formatTime, formatCountdown } from "@/utils/time";
 import { copyText, showToast, showModal } from "@/utils/common";
 import { getOmsOrderDetail } from "@/packageD/api/oms/orderDetail";
 import { listOrdersWithPage } from "@/packageD/api/oms/order";
+import {
+  OrderStatusEnum,
+  OrderStatusLabel,
+  OrderStatusClass,
+} from "@/packageD/enums/OrderStatusEnum";
+
+// ✅ 纯运行时数组（零 TS 语法）
+const ORDER_STATUS_VALUES = [
+  OrderStatusEnum.UNPAID,
+  OrderStatusEnum.PAID,
+  OrderStatusEnum.SHIPPED,
+  OrderStatusEnum.COMPLETE,
+  OrderStatusEnum.CANCELED,
+  OrderStatusEnum.CLOSED,
+  OrderStatusEnum.SERVICING,
+];
+
+// ✅ 正确写法（uni-app 100% 不报错）
+const isValidOrderStatus = (v) => {
+  return ORDER_STATUS_VALUES.includes(v);
+};
 
 // 响应式数据
 const loading = ref(false);
 const orderDetail = ref({
   id: "",
   orderSn: "",
-  status: "pending", // pending, paid, shipped, completed, cancelled, refunded
+  status: OrderStatusEnum.UNPAID, // ✅ 只用枚举
   statusDesc: "",
   createTime: "",
   payTime: "",
@@ -209,32 +252,18 @@ const orderDetail = ref({
   expireTime: null,
 });
 
-// 状态文本映射
-const statusTextMap = {
-  pending: "待付款",
-  paid: "已付款",
-  shipped: "已发货",
-  completed: "已完成",
-  cancelled: "已取消",
-  refunded: "已退款",
-};
-
-// 状态文本映射
-const statusEnumMap = {
-  0: "pending",
-  1: "paid",
-  2: "shipped",
-  3: "completed",
-  4: "cancelled",
-  5: "refunded",
-};
-
 // 计算属性
-const showActionButtons = computed(() => {
-  return ["pending", "paid", "shipped", "completed", "cancelled", "refunded"].includes(
-    orderDetail.value.status
-  );
-});
+const showActionButtons = computed(() =>
+  [
+    OrderStatusEnum.UNPAID,
+    OrderStatusEnum.PAID,
+    OrderStatusEnum.SHIPPED,
+    OrderStatusEnum.COMPLETE,
+    OrderStatusEnum.CANCELED,
+    OrderStatusEnum.CLOSED,
+    OrderStatusEnum.SERVICING,
+  ].includes(orderDetail.value.status)
+);
 
 // // 页面参数
 const orderSn = ref(""); // 订单编号
@@ -283,7 +312,7 @@ const loadOrderDetail = async () => {
       orderDetail.value = {
         id: data.id,
         orderSn: data.orderSn,
-        status: statusEnumMap[data.status],
+        status: isValidOrderStatus(data.status) ? data.status : OrderStatusEnum.UNPAID,
         statusText: data.statusText,
         statusDesc: data.statusDesc,
         createTime: data.createTime,
@@ -509,7 +538,7 @@ const shareOrder = () => {
     text-align: center;
     color: #fff;
 
-    &.pending {
+    &.unpaid {
       background: linear-gradient(135deg, #ff9a00, #ff5e00);
     }
     &.paid {
@@ -524,7 +553,10 @@ const shareOrder = () => {
     &.cancelled {
       background: linear-gradient(135deg, #e74c3c, #c0392b);
     }
-    &.refunded {
+    &.closed {
+      background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+    }
+    &.servicing {
       background: linear-gradient(135deg, #95a5a6, #7f8c8d);
     }
 

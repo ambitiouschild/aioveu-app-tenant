@@ -671,6 +671,7 @@ const handleJsapiPay = (paymentData) => {
     });
   });
 };
+import { PaymentStatusEnum } from "@/packageD/enums/PaymentStatusEnum";
 
 const startPollingPaymentStatus = (paymentNo) => {
   let times = 0;
@@ -678,9 +679,10 @@ const startPollingPaymentStatus = (paymentNo) => {
     times++;
     try {
       const res = await PayAPI.verifyPaymentStatus(paymentNo);
+      const status = res.paymentStatus;
       console.log(`🔁 第 ${times} 次查询支付状态`, res);
 
-      if (res.paymentStatus === 2) {
+      if (status === PaymentStatusEnum.PAID) {
         clearInterval(timer);
         uni.hideLoading();
         uni.showToast({ title: "支付成功", icon: "success" });
@@ -691,7 +693,7 @@ const startPollingPaymentStatus = (paymentNo) => {
         }, 1500);
       }
       // ❌ 支付失败 / 关闭
-      if (res.paymentStatus === 3 || res.paymentStatus === 4) {
+      if (status === PaymentStatusEnum.FAILED || status === PaymentStatusEnum.CLOSED) {
         clearInterval(timer);
         uni.hideLoading();
         uni.showModal({
@@ -699,6 +701,13 @@ const startPollingPaymentStatus = (paymentNo) => {
           content: "订单支付失败或已关闭",
           showCancel: false,
         });
+        return;
+      }
+
+      // ⏳ 支付中，继续轮询
+      if (status === PaymentStatusEnum.PAYING) {
+        console.log("⏳ 支付处理中...");
+        return;
       }
 
       // 超时兜底（30 秒）

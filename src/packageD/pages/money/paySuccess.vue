@@ -1,7 +1,6 @@
 <template>
   <!-- 支付成功页面容器 -->
   <view class="pay-success-page">
-
     <!-- 成功图标 -->
     <text class="success-icon yticon icon-xuanzhong2"></text>
 
@@ -14,6 +13,9 @@
         <text class="label">订单号：</text>
         <text class="value">{{ orderInfo.orderSn }}</text>
       </view>
+      <view class="status-text">
+        {{ PaymentStatusLabel[orderInfo.paymentStatus] }}
+      </view>
       <view class="info-item">
         <text class="label">支付金额：</text>
         <text class="value amount">¥{{ formatPrice(orderInfo.amount) }}</text>
@@ -23,7 +25,7 @@
     <!-- 按钮区域 -->
     <view class="button-group">
       <!-- 查看订单详情按钮 -->
-<!--      要跳转到订单详情页面，而不是订单列表页面。-->
+      <!--      要跳转到订单详情页面，而不是订单列表页面。-->
       <navigator
         url="/packageD/pages/order/detail?orderSn=${orderInfo.orderSn}"
         open-type="redirect"
@@ -33,15 +35,10 @@
       </navigator>
 
       <!-- 返回首页按钮 -->
-      <navigator
-        url="/pages/index/index"
-        open-type="switchTab"
-        class="action-button hollow"
-      >
+      <navigator url="/pages/index/index" open-type="switchTab" class="action-button hollow">
         返回首页
       </navigator>
     </view>
-
   </view>
 </template>
 
@@ -51,39 +48,41 @@
 // 页面数据和方法可以在这里定义
 
 // 可以添加响应式数据
-import { ref, onMounted } from 'vue';
-import { onLoad } from '@dcloudio/uni-app';
-
+import { ref, onMounted } from "vue";
+import { onLoad } from "@dcloudio/uni-app";
+import { getOmsOrderDetail } from "@/packageD/api/oms/orderDetail";
+import { PaymentStatusEnum, PaymentStatusLabel } from "@/packageD/enums/PaymentStatusEnum";
 // 如果需要，可以定义响应式数据
 // const someData = ref('');
 // 响应式数据定义
 // 使用 ref 定义单个响应式对象
 const orderInfo = ref({
-  orderSn: '',
-  amount: 0
+  orderSn: "",
+  amount: 0,
+  paymentStatus: PaymentStatusEnum.PAID,
 });
 
 // 页面加载钩子
-onLoad((options) => {
-  console.log('支付成功页面加载，参数:', options);
+onLoad(async (options) => {
+  console.log("支付成功页面加载，参数:", options);
   // 这里可以处理页面参数，比如订单号、金额等
 
-  // 从URL参数获取订单信息
-  if (options.orderSn) {
-    // 使用 ref定义单个响应式对象（推荐）注意：需要修改 .value
-    // 使用 reactive定义响应式对象 注意：reactive 对象直接修改属性
-    orderInfo.value.orderSn = options.orderSn;
+  const orderSn = options.orderSn;
+  if (!orderSn) {
+    uni.showToast({ title: "订单号不存在", icon: "none" });
+    return;
   }
 
-  if (options.amount) {
-    orderInfo.value.amount = parseFloat(options.amount) || 0;
+  try {
+    const res = await getOmsOrderDetail(orderSn);
+    orderInfo.value = {
+      orderSn: res.orderSn,
+      amount: res.paymentAmount / 100, // ✅ 后端金额
+    };
+  } catch (e) {
+    console.error("查询订单失败", e);
+    uni.showToast({ title: "订单信息查询失败", icon: "none" });
   }
-
-  console.log('订单信息:', orderInfo.value);
-
-  // 如果需要，可以在这里调用API获取完整的订单详情
-  // 但通常支付页面已经传递了必要信息
-
 });
 
 /**
@@ -91,12 +90,10 @@ onLoad((options) => {
  */
 const formatPrice = (price) => {
   if (isNaN(price) || price === null || price === undefined) {
-    return '0.00';
+    return "0.00";
   }
   return Number(price).toFixed(2);
 };
-
-
 
 // 可以定义方法
 // const someMethod = () => {
@@ -133,7 +130,6 @@ const formatPrice = (price) => {
   margin-bottom: 100rpx; // 底部间距
   letter-spacing: 2rpx; // 字母间距
 }
-
 
 // 成功信息区域
 .success-info {
