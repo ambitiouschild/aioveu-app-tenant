@@ -2,7 +2,24 @@ import { getToken, clearAll } from "@/utils/cache";
 import { ResultCodeEnum } from "@/enums/ResultCodeEnum";
 import { CLIENT_CONFIG, getClientId } from "@/utils/clientManager";
 // utils/request.ts
-import { useUserStore } from "@/store/modules/user"
+import { useUserStore } from "@/store/modules/user";
+
+let isRefreshing = false;
+let failedQueue: Array<{
+  resolve: (token: string) => void;
+  reject: (err: any) => void;
+}> = [];
+
+function processQueue(error: any, token: string | null = null) {
+  failedQueue.forEach((p) => {
+    if (error) {
+      p.reject(error);
+    } else {
+      p.resolve(token!);
+    }
+  });
+  failedQueue = [];
+}
 
 /**
  * 手动构建 URL 编码的参数字符串
@@ -75,6 +92,11 @@ const requestInterceptor = async (config: any) => {
     config.header["X-Client-Id"] = clientId;
   }
 
+  // ✅ 公共接口直接放行
+  if (config.url?.startsWith("/app-api/v1/auth")) {
+    return config;
+  }
+
   // 判断请求是否需要认证
   if (config.header?.auth === true) {
     const token = getToken();
@@ -90,8 +112,10 @@ const requestInterceptor = async (config: any) => {
   const userStore = useUserStore();
 
   try {
-    // 获取有效的token（会自动刷新）
-    const token = await userStore.getValidToken();
+    // 获取有效的token（会自动刷新）  // ❌ 删掉
+    // const token = await userStore.getValidToken();
+
+    const token = getToken();
     if (token && config.header) {
       config.header.Authorization = `Bearer ${token}`;
     }
@@ -123,30 +147,49 @@ const responseInterceptor = (response: any) => {
   const resData = response.data;
   const config = response.config;
 
-  // 如果状态码是 401，处理认证失败
-  if (response.statusCode === 401) {
-    console.error("❌ 认证失败，状态码 401");
-    return Promise.reject({
-      code: "AUTH_ERROR",
-      message: "认证失败",
-      response,
-    });
+  // ✅ 公共接口直接放过
+  if (config.url?.startsWith("/app-api/v1/auth")) {
+    return resData;
   }
 
-  // 处理业务错误码
-  // 业务层 token 失效
-  if (resData.code === ResultCodeEnum.TOKEN_INVALID || resData.code === "A0230") {
-    handleTokenExpiredSync();
-    return Promise.reject({
-      code: resData.code,
-      message: resData.msg || "token失效",
+  // OAuth2 token 接口失败，直接 reject
+  if (config.url?.includes("/oauth2/token")) {
+    return Promise.reject(resData);
+  }
+
+  // 401 或 token 失效
+  if (
+    response.statusCode === 401 ||
+    resData.code === ResultCodeEnum.TOKEN_INVALID ||
+    resData.code === "A0230"
+  ) {
+    return new Promise((resolve, reject) => {
+      failedQueue.push({ resolve, reject });
+
+      if (!isRefreshing) {
+        isRefreshing = true;
+
+        const userStore = useUserStore();
+        userStore
+          .refreshAccessToken()
+          .then((newToken) => {
+            processQueue(null, newToken);
+          })
+          .catch((err) => {
+            processQueue(err, null);
+            handleTokenExpiredSync(); // 只在这里跳转一次
+          })
+          .finally(() => {
+            isRefreshing = false;
+          });
+      }
     });
   }
 
   // return resData;
 
   // ✅ 成功也必须包一层 Promise
-  return Promise.resolve(resData.data);  //resData.data就是 后端 data字段
+  return Promise.resolve(resData.data); //resData.data就是 后端 data字段
 };
 
 /**

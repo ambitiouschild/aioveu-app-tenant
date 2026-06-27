@@ -15,10 +15,10 @@ onLaunch(async() => {
   themeStore.initTheme();
 
   // 检查token状态
-  checkTokenStatus();
+  // checkTokenStatus();
 
   // 定时检查token（每30分钟检查一次）
-  setInterval(checkTokenStatus, 30 * 60 * 1000);
+  // setInterval(checkTokenStatus, 30 * 60 * 1000);
 
   // // 2. 加载用户权限数据
   // try {
