@@ -153,9 +153,16 @@ const responseInterceptor = (response: any) => {
   }
 
   // OAuth2 token 接口失败，直接 reject
+  // ✅ OAuth2 token 接口：成功就返回，不 reject！
   if (config.url?.includes("/oauth2/token")) {
+    // Spring Authorization Server 成功时 statusCode 一定是 200
+    if (response.statusCode === 200 && resData.access_token) {
+      return resData; // ✅ 这里直接返回
+    }
+    // 只有真正的错误才 reject
     return Promise.reject(resData);
   }
+
 
   // 401 或 token 失效
   if (
@@ -186,10 +193,22 @@ const responseInterceptor = (response: any) => {
     });
   }
 
-  // return resData;
+  // ✅ 普通业务接口：统一解构 data
+  if (resData.code === ResultCodeEnum.SUCCESS) {
+    return Promise.resolve(resData.data);
+  }
 
-  // ✅ 成功也必须包一层 Promise
-  return Promise.resolve(resData.data); //resData.data就是 后端 data字段
+  // ❌ 业务失败
+  uni.showToast({
+    title: resData.msg || "业务处理失败",
+    icon: "none",
+  });
+
+  return Promise.reject({
+    message: resData.msg || "业务处理失败",
+    code: resData.code,
+  });
+
 };
 
 /**
