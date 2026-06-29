@@ -211,7 +211,7 @@ export const useUserStore = defineStore("user", () => {
           * */
 
           // 保存令牌
-          saveTokens(data);
+          saveTokens(data);   //这里直接就是解构的数据
           console.log("微信登录成功，保存令牌到状态和缓存，保存过期时间成功");
 
           resolve(data);

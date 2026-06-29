@@ -154,13 +154,21 @@ const responseInterceptor = (response: any) => {
 
   // OAuth2 token 接口失败，直接 reject
   // ✅ OAuth2 token 接口：成功就返回，不 reject！
+  // ✅ OAuth2 token 接口：HTTP 200 = 成功，不解构，不断言业务 code
+  //承认：你的 /oauth2/token已经被包成业务结构了
   if (config.url?.includes("/oauth2/token")) {
     // Spring Authorization Server 成功时 statusCode 一定是 200
-    if (response.statusCode === 200 && resData.access_token) {
-      return resData; // ✅ 这里直接返回
+    if (resData.code === ResultCodeEnum.SUCCESS && resData.data?.access_token) {
+      return Promise.resolve(resData.data); // ✅ 解构 data
     }
-    // 只有真正的错误才 reject
+    // 只有真正的错误才 reject // 真正的错误（401 / 无 token）→ reject
     return Promise.reject(resData);
+  }
+
+// 如果不是标准业务结构（比如 OAuth2 原生 / 第三方）
+  //你最好留一个“非业务结构兜底”，不然以后换接口会疼
+  if (resData.access_token) {
+    return Promise.resolve(resData);
   }
 
 
@@ -208,8 +216,7 @@ const responseInterceptor = (response: any) => {
     message: resData.msg || "业务处理失败",
     code: resData.code,
   });
-
-};
+};;
 
 /**
  * 统一的请求函数
