@@ -1,14 +1,13 @@
 import request from '@/utils/request'
 
-const PMSCATEGORY_BASE_URL = "/aioveu-tenant-pms/app-api/v1";
+const PMSCATEGORY_BASE_URL = "/aioveu/api/v8/app/pms/categories";
 
-const AUTHCATEGORY_BASE_URL = "/aioveu-tenant-auth/app-api/v1/auth";
 
 export function getCategoryList(queryParams: PmsCategoryPageQuery) {
 
 
 	return request({
-    url: `${AUTHCATEGORY_BASE_URL}/goodsCategories`,
+    url: `${PMSCATEGORY_BASE_URL}/goodsCategories`,
     method: "GET",
     data: queryParams,
     header: {

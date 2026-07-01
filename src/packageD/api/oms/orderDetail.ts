@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-const OMSORDERDETAIL_BASE_URL = "/aioveu-tenant-oms/app-api/v1/order";
+const OMSORDERDETAIL_BASE_URL = "/aioveu/api/v8/app/oms/oms-order-item";
 
 // 订单列表
 export function getOmsOrderDetail(orderSn: String, channel: Number) {

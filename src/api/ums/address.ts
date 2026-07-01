@@ -1,7 +1,7 @@
 import request from '@/utils/request'
 
 
-const UMSMEMBERADDRESS_BASE_URL = "/aioveu-tenant-ums/app-api/v1/addresses";
+const UMSMEMBERADDRESS_BASE_URL = "/aioveu/api/v8/app/ums/addresses";
 
 
 export function list(memberId : number) {

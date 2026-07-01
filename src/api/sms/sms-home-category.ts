@@ -1,9 +1,7 @@
 import request from "@/utils/request";
 
-const SMSHOMECATEGORY_BASE_URL = "/aioveu-tenant-sms/app-api/v1/sms-home-category";
+const SMSHOMECATEGORY_BASE_URL = "/aioveu/api/v8/app/sms/sms-home-category";
 
-
-const AUTHCATEGORY_BASE_URL = "/aioveu-tenant-auth/app-api/v1/auth";
 
 const SmsHomeCategoryAPI = {
     /** 获取首页分类配置分页数据 */
@@ -38,7 +36,7 @@ const SmsHomeCategoryAPI = {
       // const queryString = buildQueryString(allParams);
       // console.log("使用URLSearchParams或手动拼接:", queryString);
         return request<PageResult<SmsHomeCategoryPageVO[]>>({
-          url: `${AUTHCATEGORY_BASE_URL}/categories`,
+          url: `${SMSHOMECATEGORY_BASE_URL}/page`,
           method: "GET",
           data: queryParams, // 加入 clientId,  //GET 请求通常不应该有请求体，参数应该通过 URL 查询字符串传递
           header: {

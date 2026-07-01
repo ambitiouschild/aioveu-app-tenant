@@ -7,8 +7,7 @@ import {
   detectClientId,
 } from "@/utils/clientManager";
 
-const AUTH_BASE_URL = "/aioveu-tenant-auth/api/v1/auth";
-const AUTH_LOGIN_URL = "/aioveu-tenant-auth";
+const AUTH_BASE_URL = "/aioveu/api/v8/app/auth/auth";
 
 const AuthAPI = {
   /**
@@ -48,7 +47,7 @@ const AuthAPI = {
 
 
     return request<LoginResult>({
-      url: `${AUTH_LOGIN_URL}/oauth2/token`,
+      url: `/oauth2/token`,
       method: "POST",
       data: {
         code,
@@ -82,7 +81,7 @@ const AuthAPI = {
 
 
     return request<LoginResult>({
-      url: `${AUTH_LOGIN_URL}/oauth2/token`,
+      url: `/oauth2/token`,
       method: "POST",
       data: {
         refresh_token: refreshToken ,
@@ -121,7 +120,7 @@ const AuthAPI = {
 
 
     return request<LoginResult>({
-      url: `${AUTH_LOGIN_URL}/oauth2/token`,
+      url: `/oauth2/token`,
       method: "POST",
       data: {
         code,
@@ -143,7 +142,7 @@ const AuthAPI = {
    */
   sendSmsCode(phoneNumber: string): Promise<LoginResult> {
     return request<LoginResult>({
-      url: `${AUTH_LOGIN_URL}/oauth2/token`,
+      url: `/oauth2/token`,
       method: "POST",
       data: {
         mobile: phoneNumber,
@@ -170,7 +169,7 @@ const AuthAPI = {
     console.log("4. verifyCode类型:", typeof code);
 
     return request<LoginResult>({
-      url: `${AUTH_LOGIN_URL}/oauth2/token`,
+      url: `/oauth2/token`,
       method: "POST",
       data: {
         mobile: mobile,
@@ -193,7 +192,7 @@ const AuthAPI = {
    */
   loginByPassword(phoneNumber: string, password: any): Promise<LoginResult> {
     return request<LoginResult>({
-      url: `${AUTH_LOGIN_URL}/oauth2/token`,
+      url: `/oauth2/token`,
       method: "POST",
       data: {
         mobile: phoneNumber,

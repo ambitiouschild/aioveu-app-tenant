@@ -1,6 +1,6 @@
 import request from "@/utils/request";
 
-const USER_BASE_URL = "/aioveu-tenant-ums/app-api/v1/members";
+const USER_BASE_URL = "/aioveu/api/v8/app/ums/members";
 
 const UserAPI = {
   /**

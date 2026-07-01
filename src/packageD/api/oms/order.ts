@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-const OMSORDER_BASE_URL = "/aioveu-tenant-oms/app-api/v1/orders";
+const OMSORDER_BASE_URL = "/aioveu/api/v8/app/oms/orders";
 
 //url: `${OMSORDER_BASE_URL}`,
 

@@ -1,8 +1,7 @@
 import request from "@/utils/request";
 
-const SMSHOMEADVERT_BASE_URL = "/aioveu-tenant-sms/app-api/v1/sms-home-advert";
+const SMSHOMEADVERT_BASE_URL = "/aioveu/api/v8/app/sms/sms-home-advert";
 
-const AUTHADVERT_BASE_URL = "/aioveu-tenant-auth/app-api/v1/auth";
 
 const SmsHomeAdvertAPI = {
     /** 获取首页广告配置（增加跳转路径）分页数据 */
@@ -30,7 +29,7 @@ const SmsHomeAdvertAPI = {
       // console.log("使用URLSearchParams或手动拼接:", queryString);
 
         return request<PageResult<SmsHomeAdvertPageVO[]>>({
-          url: `${AUTHADVERT_BASE_URL}/adverts`,
+          url: `${SMSHOMEADVERT_BASE_URL}/page`,
           method: "GET",
           data: queryParams, // 加入 clientId, //GET 请求通常不应该有请求体，参数应该通过 URL 查询字符串传递
           header: {

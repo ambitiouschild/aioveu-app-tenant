@@ -1,13 +1,8 @@
 import request from '@/utils/request'
 
 
-const PMSSPU_BASE_URL = "/aioveu-tenant-pms/app-api/v1/spu";
+const PMSSPU_BASE_URL = "/aioveu/api/v8/app/pms";
 
-const AUTHSECKILLING_BASE_URL = "/aioveu-tenant-auth/app-api/v1/auth";
-
-const AUTHSPU_BASE_URL = "/aioveu-tenant-auth/app-api/v1/auth";
-
-const AUTHSPUDETIL_BASE_URL = "/aioveu-tenant-auth/app-api/v1/auth/spuDetail";
 /**
  * 获取商品分页列表
  * 
@@ -16,7 +11,7 @@ const AUTHSPUDETIL_BASE_URL = "/aioveu-tenant-auth/app-api/v1/auth/spuDetail";
 export function listSpuPages(params:any) {
 
 	return request({
-    url: `${AUTHSPU_BASE_URL}/spuLists`,
+    url: `${PMSSPU_BASE_URL}/spu/pages`,
     method: "GET",
     data: params,
     header: {
@@ -33,7 +28,7 @@ export function listSpuPages(params:any) {
 export function listSeckillingSpus() {
 
 	return request({
-    url: `${AUTHSECKILLING_BASE_URL}/seckilling`,
+    url: `${PMSSPU_BASE_URL}/spu/seckilling`,
     method: "GET",
     header: {
       skipAuth: true,
@@ -47,13 +42,12 @@ export function listSeckillingSpus() {
  * @param {Object} spuId
  */
 export function getSpuDetail(spuId: number) {
-
-	return request({
-    url: `${AUTHSPUDETIL_BASE_URL}/${spuId}`,
-		method: "GET",
+  return request({
+    url: `${PMSSPU_BASE_URL}/spu/spuDetail/${spuId}`,
+    method: "GET",
     header: {
       skipAuth: true,
     },
-	})
+  });
 }
 
